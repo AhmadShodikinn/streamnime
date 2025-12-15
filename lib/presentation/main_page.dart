@@ -4,6 +4,7 @@ import 'package:streaming_app/bloc/home/home_bloc.dart';
 import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
 import 'package:streaming_app/data/repository/home_anime_repository.dart';
+import 'package:streaming_app/presentation/constant/app_colors.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -15,10 +16,18 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: SafeArea(
-          child: ListView(padding: EdgeInsets.zero, children: [MainHeader()]),
+    return Scaffold(
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            MainHeader(),
+            ContentSection("Top Hits Anime"),
+            showcaseCardList(context),
+            ContentSection("New Episode Release"),
+            showcaseCardList(context),
+            SizedBox(height: 15),
+          ],
         ),
       ),
 
@@ -74,17 +83,45 @@ class _MainPageState extends State<MainPage> {
   Widget MainHeader() {
     return Stack(
       children: [
-        Container(
-          height: 320,
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                'assets/images/background-header.jpg',
-              ), // atau .png
-              fit: BoxFit.cover,
+        // Container(
+        //   height: 320,
+        //   width: double.infinity,
+        //   decoration: const BoxDecoration(
+        //     image: DecorationImage(
+        //       image: AssetImage(
+        //         'assets/images/background-header.jpg',
+        //       ), // atau .png
+        //       fit: BoxFit.cover,
+        //     ),
+        //   ),
+        // ),
+        Stack(
+          children: <Widget>[
+            Container(
+              height: 320,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/images/background-header.jpg',
+                  ), // atau .png
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-          ),
+            Container(
+              height: 320,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                gradient: LinearGradient(
+                  begin: FractionalOffset.topCenter,
+                  end: FractionalOffset.bottomCenter,
+                  colors: [Colors.grey.withOpacity(0.0), Colors.black],
+                  stops: [0.0, 1.0],
+                ),
+              ),
+            ),
+          ],
         ),
 
         Padding(
@@ -151,11 +188,11 @@ class _MainPageState extends State<MainPage> {
                     icon: const Icon(Icons.play_circle),
                     label: const Text('Play'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: AppColors.softGreen,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
+                        horizontal: 18,
+                        vertical: 10,
                       ),
                     ),
                   ),
@@ -168,6 +205,10 @@ class _MainPageState extends State<MainPage> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: BorderSide(width: 2, color: Colors.white),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
                     ),
                   ),
                 ],
@@ -179,16 +220,187 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget ContentSection() {
+  Widget ContentSection(String title) {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
+        padding: EdgeInsets.all(15),
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text("Ongoing Anime"), Text("See all")],
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black,
+                fontFamily: "Urbanist",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "See all",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.green,
+                fontFamily: "Urbanist",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Widget showcaseCard({required String rating, required String number}) {
+    return Stack(
+      children: [
+        Container(
+          height: 230,
+          width: 150,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: const DecorationImage(
+              image: AssetImage('assets/images/background-header.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+
+        Positioned(
+          top: 10,
+          left: 10,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.softGreen,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              rating,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+
+        Positioned(
+          bottom: 10,
+          left: 10,
+          child: Text(
+            number,
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget showcaseCardItem({
+    required BuildContext context,
+    required String rating,
+    required String number,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: showcaseCard(rating: rating, number: number),
+    );
+  }
+
+  Widget showcaseCardList(BuildContext context) {
+    return SizedBox(
+      height: 230,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 15),
+            child: showcaseCardItem(
+              context: context,
+              rating: "8.${index}",
+              number: "${index + 1}",
+              onTap: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (_) => DetailPage(id: index)),
+                // );
+                print("Card tapped");
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
+
+//   Widget ShowcaseCard() {
+//     return Stack(
+//       children: [
+//         Container(
+//           height: 230,
+//           width: 150,
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(10),
+//             image: DecorationImage(
+//               image: AssetImage(
+//                 'assets/images/background-header.jpg',
+//               ), // atau .png
+//               fit: BoxFit.cover,
+//             ),
+//           ),
+//         ),
+
+//         Positioned(
+//           top: 10,
+//           left: 10,
+//           child: Container(
+//             decoration: BoxDecoration(
+//               color: AppColors.softGreen,
+//               borderRadius: BorderRadius.circular(8),
+//             ),
+//             child: Padding(
+//               // padding: EdgeInsets.all(8),
+//               padding: EdgeInsetsGeometry.symmetric(
+//                 horizontal: 12,
+//                 vertical: 6,
+//               ),
+//               child: Text(
+//                 "8,7",
+//                 style: TextStyle(
+//                   fontSize: 14,
+//                   fontFamily: "Urbanist",
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+
+//         Positioned(
+//           bottom: 10,
+//           left: 10,
+//           child: Text(
+//             "1",
+//             style: TextStyle(
+//               fontSize: 48,
+//               fontFamily: "Urbanist",
+//               fontWeight: FontWeight.bold,
+//               color: Colors.white,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
