@@ -5,6 +5,8 @@ import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
 import 'package:streaming_app/data/repository/home_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/ongoing_page.dart';
+import 'package:streaming_app/presentation/widget/showcase_card.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -22,9 +24,19 @@ class _MainPageState extends State<MainPage> {
           padding: EdgeInsets.zero,
           children: [
             MainHeader(),
-            ContentSection("Top Hits Anime"),
+            ContentSection("Ongoing", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OngoingPage()),
+              );
+            }),
             showcaseCardList(context),
-            ContentSection("New Episode Release"),
+            ContentSection("Completed Anime", () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OngoingPage()),
+              );
+            }),
             showcaseCardList(context),
             SizedBox(height: 15),
           ],
@@ -220,7 +232,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget ContentSection(String title) {
+  Widget ContentSection(String title, VoidCallback seeAll) {
     return Container(
       color: Colors.white,
       child: Padding(
@@ -237,69 +249,21 @@ class _MainPageState extends State<MainPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              "See all",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.green,
-                fontFamily: "Urbanist",
-                fontWeight: FontWeight.bold,
+            GestureDetector(
+              onTap: seeAll,
+              child: Text(
+                "See all",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.green,
+                  fontFamily: "Urbanist",
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget showcaseCard({required String rating, required String number}) {
-    return Stack(
-      children: [
-        Container(
-          height: 230,
-          width: 150,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: const DecorationImage(
-              image: AssetImage('assets/images/background-header.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-
-        Positioned(
-          top: 10,
-          left: 10,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.softGreen,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              rating,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-
-        Positioned(
-          bottom: 10,
-          left: 10,
-          child: Text(
-            number,
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -311,7 +275,7 @@ class _MainPageState extends State<MainPage> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: showcaseCard(rating: rating, number: number),
+      child: ShowcaseCard(rating: rating, number: number),
     );
   }
 
