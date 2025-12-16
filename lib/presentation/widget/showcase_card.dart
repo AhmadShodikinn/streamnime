@@ -17,7 +17,7 @@ class ShowcaseCard extends StatelessWidget {
           height: 220,
           width: 150,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
             image: const DecorationImage(
               image: AssetImage('assets/images/background-header.jpg'),
               fit: BoxFit.cover,

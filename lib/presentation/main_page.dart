@@ -4,7 +4,9 @@ import 'package:streaming_app/bloc/home/home_bloc.dart';
 import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
 import 'package:streaming_app/data/repository/home_anime_repository.dart';
+import 'package:streaming_app/presentation/completed_page.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:streaming_app/presentation/ongoing_page.dart';
 import 'package:streaming_app/presentation/widget/showcase_card.dart';
 
@@ -19,6 +21,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -34,11 +37,11 @@ class _MainPageState extends State<MainPage> {
             ContentSection("Completed Anime", () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => OngoingPage()),
+                MaterialPageRoute(builder: (context) => CompletedPage()),
               );
             }),
             showcaseCardList(context),
-            SizedBox(height: 15),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -236,7 +239,7 @@ class _MainPageState extends State<MainPage> {
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -282,26 +285,34 @@ class _MainPageState extends State<MainPage> {
   Widget showcaseCardList(BuildContext context) {
     return SizedBox(
       height: 230,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(left: 15),
-            child: showcaseCardItem(
-              context: context,
-              rating: "8.${index}",
-              number: "${index + 1}",
-              onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (_) => DetailPage(id: index)),
-                // );
-                print("Card tapped");
-              },
-            ),
-          );
-        },
+      child: Padding(
+        // padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
+        padding: EdgeInsetsGeometry.only(left: 15),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: 5,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: showcaseCardItem(
+                context: context,
+                rating: "8.${index}",
+                number: "${index + 1}",
+                onTap: () {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (_) => DetailPage(id: index)),
+                  // );
+                  // print("Card tapped");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => DetailPage()),
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

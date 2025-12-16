@@ -12,7 +12,9 @@ class _OngoingPageState extends State<OngoingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
         iconTheme: IconThemeData(color: Colors.black),
