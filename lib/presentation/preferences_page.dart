@@ -57,43 +57,51 @@ class PreferencesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          TabBar(
-            labelColor: AppColors.softGreen,
-            unselectedLabelColor: Colors.grey,
-            indicatorPadding: EdgeInsetsGeometry.all(0.0),
-            indicatorWeight: 4.0,
-            labelPadding: EdgeInsets.symmetric(horizontal: 0.0),
-            indicator: ShapeDecoration(
-              shape: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: AppColors.softGreen,
-                  width: 0,
-                  style: BorderStyle.solid,
+    return Padding(
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
+      child: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            TabBar(
+              labelColor: AppColors.softGreen,
+              labelStyle: TextStyle(
+                fontSize: 16,
+                fontFamily: "Urbanist",
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelColor: Colors.grey,
+              indicatorPadding: EdgeInsetsGeometry.all(0.0),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelPadding: EdgeInsets.symmetric(horizontal: 0.0),
+              indicator: ShapeDecoration(
+                shape: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: AppColors.softGreen,
+                    width: 4,
+                    style: BorderStyle.solid,
+                  ),
                 ),
               ),
-            ),
-            tabs: [
-              Tab(text: "More Like This"),
-              Tab(text: "Comments"),
-            ],
-          ),
-          SizedBox(
-            height: 500,
-            child: TabBarView(
-              children: [
-                Padding(
-                  padding: EdgeInsetsGeometry.symmetric(vertical: 15),
-                  child: ShowcaseItemGrid(),
-                ),
-                const Center(child: Text("No comment")),
+              tabs: [
+                Tab(text: "More Like This"),
+                Tab(text: "Comments"),
               ],
             ),
-          ),
-        ],
+            SizedBox(
+              height: 500,
+              child: TabBarView(
+                children: [
+                  Padding(
+                    padding: EdgeInsetsGeometry.symmetric(vertical: 15),
+                    child: ShowcaseItemGrid(),
+                  ),
+                  const Center(child: Text("No comment")),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

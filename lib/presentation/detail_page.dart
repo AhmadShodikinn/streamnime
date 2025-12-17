@@ -55,7 +55,13 @@ class _DetailPageState extends State<DetailPage> {
           Positioned(
             top: 20,
             left: 15,
-            child: Icon(Icons.arrow_back, color: Colors.white),
+            // child: Icon(Icons.arrow_back, color: Colors.white),
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+            ),
           ),
           Positioned(
             top: 20,

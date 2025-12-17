@@ -29,7 +29,10 @@ class _CompletedPageState extends State<CompletedPage> {
           ),
         ),
       ),
-      body: ShowcaseItemGrid(),
+      body: Padding(
+        padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
+        child: ShowcaseItemGrid(),
+      ),
     );
   }
 }

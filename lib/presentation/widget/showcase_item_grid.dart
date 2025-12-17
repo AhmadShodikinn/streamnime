@@ -16,7 +16,7 @@ class ShowcaseItemGrid extends StatelessWidget {
     });
 
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      // padding: const EdgeInsets.symmetric(horizontal: 15),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // 2 kolom
         crossAxisSpacing: 6, // Spasi horizontal antar kolom
