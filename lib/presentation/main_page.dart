@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/bloc/home/home_bloc.dart';
 import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
@@ -156,9 +157,13 @@ class _MainPageState extends State<MainPage> {
               ),
               Row(
                 children: const [
-                  Icon(Icons.search, size: 26, color: Colors.white),
+                  Icon(
+                    FontAwesomeIcons.magnifyingGlass,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                   SizedBox(width: 10),
-                  Icon(Icons.notifications, size: 26, color: Colors.white),
+                  Icon(FontAwesomeIcons.bell, size: 20, color: Colors.white),
                 ],
               ),
             ],

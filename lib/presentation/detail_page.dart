@@ -1,5 +1,8 @@
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/preferences_page.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({Key? key}) : super(key: key);
@@ -21,6 +24,7 @@ class _DetailPageState extends State<DetailPage> {
             ShowcaseHeaderDetail(),
             ShowcaseInformationDetail(),
             ShowcaseInformationEpisodes(),
+            PreferencesPage(),
           ],
         ),
       ),
@@ -69,43 +73,89 @@ class _DetailPageState extends State<DetailPage> {
       child: Padding(
         padding: EdgeInsetsGeometry.all(15),
         child: Column(
+          spacing: 10,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Demon Slayer (Kimetsu ...",
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: "Urbanist",
+                Expanded(
+                  child: Text(
+                    "Demon Slayer (Kimetsu no Yaiba Mugen Ressha-hen)",
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: "Urbanist",
+                    ),
                   ),
                 ),
-                Row(children: [Icon(Icons.bookmark), Icon(Icons.send)]),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      Baseline(
+                        baseline: 24,
+                        baselineType: TextBaseline.alphabetic,
+                        child: Icon(FontAwesomeIcons.bookmark, size: 18),
+                      ),
+                      const SizedBox(width: 20),
+                      Baseline(
+                        baseline: 24,
+                        baselineType: TextBaseline.alphabetic,
+                        child: Icon(FontAwesomeIcons.paperPlane, size: 18),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             Row(
+              spacing: 12,
               children: [
-                Icon(Icons.star),
-                Text("9.8"),
-                Icon(Icons.arrow_forward_ios),
-                Text("2022"),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                Icon(
+                  FontAwesomeIcons.solidStarHalfStroke,
+                  size: 16,
+                  color: AppColors.softGreen,
+                ),
+                Text(
+                  "9.8",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: AppColors.softGreen,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Urbanist",
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.softGreen,
-                        width: 1.0,
-                      ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: AppColors.softGreen,
+                ),
+                Text(
+                  "2022",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: "Urbanist",
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.softGreen, width: 1.0),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
                     child: Text(
                       "13+",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
+                        color: AppColors.softGreen,
+                        fontSize: 12,
                         fontFamily: "Urbanist",
                         fontWeight: FontWeight.bold,
                         // color: Colors.white,
@@ -113,22 +163,22 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.softGreen, width: 1.0),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.softGreen,
-                        width: 1.0,
-                      ),
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
                     child: Text(
                       "Japan",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
+                        color: AppColors.softGreen,
+                        fontSize: 12,
                         fontFamily: "Urbanist",
                         fontWeight: FontWeight.bold,
                         // color: Colors.white,
@@ -136,22 +186,22 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.softGreen, width: 1.0),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.softGreen,
-                        width: 1.0,
-                      ),
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
                     ),
                     child: Text(
                       "Subtitle",
+                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 14,
+                        color: AppColors.softGreen,
+                        fontSize: 12,
                         fontFamily: "Urbanist",
                         fontWeight: FontWeight.bold,
                         // color: Colors.white,
@@ -175,10 +225,6 @@ class _DetailPageState extends State<DetailPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.softGreen,
                       foregroundColor: Colors.white,
-                      // padding: const EdgeInsets.symmetric(
-                      //   horizontal: 18,
-                      //   vertical: 10,
-                      // ),
                     ),
                   ),
                 ),
@@ -208,11 +254,26 @@ class _DetailPageState extends State<DetailPage> {
                 ),
               ],
             ),
-            Text(
-              "Genre: Action, Martial Arts, Adventure, Dark Fantasy, Thriller, ...",
+            Padding(
+              padding: EdgeInsetsGeometry.only(right: 15),
+              child: Text(
+                "Genre: Action, Martial Arts, Adventure, Dark Fantasy, Thriller, Demon",
+                style: TextStyle(
+                  fontFamily: "Urbanist",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-            Text(
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. View more..",
+            ExpandableText(
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+              expandText: "View more",
+              maxLines: 3,
+              linkColor: AppColors.softGreen,
+              animation: true,
+              collapseOnTextTap: true,
             ),
           ],
         ),
@@ -230,9 +291,31 @@ class _DetailPageState extends State<DetailPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Episodes"),
+              Text(
+                "Episodes",
+                style: TextStyle(
+                  fontFamily: "Urbanist",
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               Row(
-                children: [Text("Season 2"), Icon(Icons.keyboard_arrow_down)],
+                children: [
+                  Text(
+                    "Season 2",
+                    style: TextStyle(
+                      fontFamily: "Urbanist",
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.softGreen,
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 20,
+                    color: AppColors.softGreen,
+                  ),
+                ],
               ),
             ],
           ),
@@ -273,7 +356,7 @@ class _DetailPageState extends State<DetailPage> {
           itemCount: 8,
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(right: 15),
               child: CardEpisodeShowcase(),
             );
           },
@@ -287,16 +370,34 @@ class _DetailPageState extends State<DetailPage> {
     return Container(
       height: 100,
       width: 150,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
         image: DecorationImage(
           image: AssetImage('assets/images/background-header.jpg'), // atau .png
           fit: BoxFit.cover,
         ),
+        gradient: LinearGradient(
+          begin: FractionalOffset.topCenter,
+          end: FractionalOffset.bottomCenter,
+          colors: [Colors.grey.withOpacity(0.0), Colors.black],
+          stops: [0.0, 1.0],
+        ),
       ),
       child: Stack(
         children: [
-          Center(child: Icon(Icons.play_circle)),
-          Positioned(bottom: 5, left: 5, child: Text("Episode 1")),
+          Center(child: Icon(Icons.play_circle, color: Colors.white)),
+          Positioned(
+            bottom: 5,
+            left: 5,
+            child: Text(
+              "Episode 1",
+              style: TextStyle(
+                fontFamily: "Urbanist",
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
     );
