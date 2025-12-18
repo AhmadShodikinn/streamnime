@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:streaming_app/bloc/ongoing/ongoing_bloc.dart';
+import 'package:streaming_app/bloc/ongoing/ongoing_event.dart';
+import 'package:streaming_app/bloc/ongoing/ongoing_state.dart';
+import 'package:streaming_app/data/repository/ongoing_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 
 class OngoingPage extends StatefulWidget {
@@ -38,29 +43,72 @@ class _OngoingPageState extends State<OngoingPage> {
           ),
         ],
       ),
-      body: SectionCard(),
+      // body: SectionCard(),
+      body: BlocProvider(
+        create: (_) =>
+            OngoingBloc(OngoingAnimeRepository())..add(FetchOngoingAnimeData()),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: BlocBuilder<OngoingBloc, OngoingState>(
+            builder: (context, state) {
+              if (state is OngoingLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is OngoingLoaded) {
+                final ongoingList = state.ongoingData.data.animeList;
+
+                return ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: ongoingList.length,
+                  itemBuilder: (context, index) {
+                    final animeData = ongoingList[index];
+
+                    return SectionCard(
+                      title: animeData.title,
+                      poster: animeData.poster,
+                      lastEpisode: animeData.episodes.toString(),
+                      lastReleaseDate: animeData.latestReleaseDate,
+                      releaseDay: animeData.releaseDay,
+                    );
+                  },
+                );
+              } else if (state is OngoingError) {
+                return Center(child: Text(state.message));
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
     );
   }
 
-  Widget SectionCard() {
+  Widget SectionCard({
+    required String title,
+    required String poster,
+    required String lastEpisode,
+    required String releaseDay,
+    required String lastReleaseDate,
+  }) {
     return Container(
       height: 220,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ShowcaseCard(),
+          ShowcaseCard(poster: poster, episode: lastEpisode),
           const SizedBox(width: 12),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Flexible(
                     child: Text(
-                      "Attack on Titan Final Season Part 2",
+                      title,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -71,30 +119,35 @@ class _OngoingPageState extends State<OngoingPage> {
                     ),
                   ),
                   Text(
-                    "2022 | Japan",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Urbanist",
-                    ),
+                    "Terakhir update: $lastReleaseDate",
+                    style: TextStyle(fontSize: 16, fontFamily: "Urbanist"),
                   ),
-                  Flexible(
-                    child: Text(
-                      "Genre: Action, Fiction, Dark Fantasy, Apocalyptic, Drama, Shounen, ...",
-                      style: TextStyle(fontSize: 14, fontFamily: "Urbanist"),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      print('Button pressed!');
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text('My List'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.softGreen,
-                      foregroundColor: Colors.white,
+                  // Flexible(
+                  //   child: Text(
+                  //     "Genre: Action, Fiction, Dark Fantasy, Apocalyptic, Drama, Shounen, ...",
+                  //     style: TextStyle(fontSize: 14, fontFamily: "Urbanist"),
+                  //     maxLines: 2,
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  // ),
+                  SizedBox(height: 15),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        // Your button logic here
+                        print('Button pressed!');
+                      },
+                      icon: const Icon(Icons.play_circle),
+                      label: const Text('Play'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.softGreen,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -106,47 +159,70 @@ class _OngoingPageState extends State<OngoingPage> {
     );
   }
 
-  Widget ShowcaseCard() {
+  Widget ShowcaseCard({required String episode, required String poster}) {
     return Stack(
       children: [
-        Container(
-          height: 220,
-          width: 150,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-              image: AssetImage('assets/images/background-header.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        Positioned(
-          top: 15,
-          left: 15,
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.softGreen,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Text(
-                "8.7",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontFamily: "Urbanist",
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+        Stack(
+          children: [
+            // Gambar
+            Container(
+              height: 220,
+              width: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: NetworkImage(poster),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ),
+
+            // Gradient gelap di bawah
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent, // atas tetap terang
+                      Colors.black87, // bawah gelap
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+
+        // Positioned(
+        //   top: 15,
+        //   left: 15,
+        //   child: Container(
+        //     decoration: BoxDecoration(
+        //       color: AppColors.softGreen,
+        //       borderRadius: BorderRadius.circular(8),
+        //     ),
+        //     child: Padding(
+        //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        //       child: Text(
+        //         "8.7",
+        //         style: TextStyle(
+        //           fontSize: 14,
+        //           fontFamily: "Urbanist",
+        //           fontWeight: FontWeight.bold,
+        //           color: Colors.white,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Positioned(
           bottom: 15,
           left: 15,
           child: Text(
-            "1",
+            episode,
             style: TextStyle(
               fontSize: 48,
               fontFamily: "Urbanist",

@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 
-class ShowcaseCard extends StatelessWidget {
+class ShowcaseCardWithoutEpisode extends StatelessWidget {
   final String poster;
-  final int lastEpisode;
+  final int totalEpisode;
   final String? rating;
 
-  const ShowcaseCard({
+  const ShowcaseCardWithoutEpisode({
     required this.poster,
-    required this.lastEpisode,
+    required this.totalEpisode,
     this.rating,
     Key? key,
   }) : super(key: key);
@@ -54,8 +54,8 @@ class ShowcaseCard extends StatelessWidget {
 
         if (rating != null)
           Positioned(
-            top: 15,
-            left: 15,
+            top: 10,
+            right: 10,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
@@ -75,11 +75,11 @@ class ShowcaseCard extends StatelessWidget {
 
         Positioned(
           bottom: 15,
-          left: 15,
+          left: 10,
           child: Text(
-            lastEpisode.toString(),
+            "$totalEpisode Episode",
             style: const TextStyle(
-              fontSize: 42,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
               fontFamily: "Urbanist",

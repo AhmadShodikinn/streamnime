@@ -4,12 +4,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/bloc/home/home_bloc.dart';
 import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
+import 'package:streaming_app/data/models/home_anime_model.dart';
 import 'package:streaming_app/data/repository/home_anime_repository.dart';
 import 'package:streaming_app/presentation/completed_page.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:streaming_app/presentation/ongoing_page.dart';
 import 'package:streaming_app/presentation/widget/showcase_card.dart';
+import 'package:streaming_app/presentation/widget/showcase_card_without_episode.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -23,94 +25,63 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            MainHeader(),
-            ContentSection("Ongoing", () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => OngoingPage()),
-              );
-            }),
-            showcaseCardList(context),
-            ContentSection("Completed Anime", () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CompletedPage()),
-              );
-            }),
-            showcaseCardList(context),
-            SizedBox(height: 10),
-          ],
+      body: BlocProvider(
+        create: (_) => HomeBloc(HomeAnimeRepository())..add(FetchHomeData()),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
+              if (state is HomeLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is HomeLoaded) {
+                final ongoingList = state.homeData.data.ongoing.animeList;
+                final completedList = state.homeData.data.completed.animeList;
+
+                return ListView(
+                  children: [
+                    MainHeader(),
+                    ContentSection("Ongoing Anime", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OngoingPage()),
+                      );
+                    }),
+                    ongoingShowcaseList(
+                      context,
+                      ongoingList,
+                    ), // Tampilkan list ongoing
+
+                    ContentSection("Completed Anime", () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CompletedPage(),
+                        ),
+                      );
+                    }),
+                    completedShowcaseList(
+                      context,
+                      completedList,
+                    ), // Tampilkan list completed
+
+                    SizedBox(height: 10),
+                  ],
+                );
+              } else if (state is HomeError) {
+                return Center(child: Text(state.message));
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
-
-      // home: BlocProvider(
-      //   create: (_) => HomeBloc(HomeAnimeRepository())..add(FetchHomeData()),
-      //   child: Scaffold(
-      //     backgroundColor: Colors.white,
-      //     body: BlocBuilder<HomeBloc, HomeState>(
-      //       builder: (context, state) {
-      //         if (state is HomeLoading) {
-      //           return const Center(child: CircularProgressIndicator());
-      //         } else if (state is HomeLoaded) {
-      //           final ongoingList = state.homeData.data.ongoing.animeList;
-      //           print('Loaded ongoing anime: ${ongoingList.length}');
-
-      //           return ListView.builder(
-      //             itemCount: ongoingList.length,
-      //             itemBuilder: (context, index) {
-      //               final anime = ongoingList[index];
-      //               return Card(
-      //                 margin: const EdgeInsets.symmetric(
-      //                   horizontal: 12,
-      //                   vertical: 6,
-      //                 ),
-      //                 child: ListTile(
-      //                   title: Text(
-      //                     anime.title,
-      //                     style: const TextStyle(fontWeight: FontWeight.bold),
-      //                   ),
-      //                   subtitle: Text(
-      //                     'Episodes: ${anime.episodes} • Release: ${anime.releaseDay ?? '-'}',
-      //                   ),
-      //                   onTap: () {
-      //                     // Bisa tambahkan navigasi ke detail anime
-      //                     print('Tapped on ${anime.title}');
-      //                   },
-      //                 ),
-      //               );
-      //             },
-      //           );
-      //         } else if (state is HomeError) {
-      //           return Center(child: Text(state.message));
-      //         }
-
-      //         return const SizedBox.shrink();
-      //       },
-      //     ),
-      //   ),
-      // ),
     );
   }
 
   Widget MainHeader() {
     return Stack(
       children: [
-        // Container(
-        //   height: 320,
-        //   width: double.infinity,
-        //   decoration: const BoxDecoration(
-        //     image: DecorationImage(
-        //       image: AssetImage(
-        //         'assets/images/background-header.jpg',
-        //       ), // atau .png
-        //       fit: BoxFit.cover,
-        //     ),
-        //   ),
-        // ),
         Stack(
           children: <Widget>[
             Container(
@@ -277,43 +248,49 @@ class _MainPageState extends State<MainPage> {
 
   Widget showcaseCardItem({
     required BuildContext context,
-    required String rating,
-    required String number,
+    required String poster,
+    required int lastEpisode,
+    String? rating,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: ShowcaseCard(rating: rating, number: number),
+      child: ShowcaseCard(
+        poster: poster,
+        lastEpisode: lastEpisode,
+        rating: rating,
+      ),
     );
   }
 
-  Widget showcaseCardList(BuildContext context) {
+  Widget ongoingShowcaseList(
+    BuildContext context,
+    List<HomeAnimeItem> animelist,
+  ) {
     return SizedBox(
       height: 230,
       child: Padding(
-        // padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
-        padding: EdgeInsetsGeometry.only(left: 15),
+        padding: const EdgeInsets.only(left: 15),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 5,
+          itemCount: animelist.length,
           itemBuilder: (context, index) {
+            final anime = animelist[index];
+
             return Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: showcaseCardItem(
-                context: context,
-                rating: "8.${index}",
-                number: "${index + 1}",
+              child: GestureDetector(
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (_) => DetailPage(id: index)),
-                  // );
-                  // print("Card tapped");
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => DetailPage()),
                   );
                 },
+                child: ShowcaseCard(
+                  poster: anime.poster,
+                  lastEpisode: anime.episodes,
+                  rating: null, // ongoing tidak punya score
+                ),
               ),
             );
           },
@@ -321,66 +298,72 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
+
+  Widget completedShowcaseList(
+    BuildContext context,
+    List<HomeAnimeItem> animelist,
+  ) {
+    return SizedBox(
+      height: 230,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 15),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: animelist.length,
+          itemBuilder: (context, index) {
+            final anime = animelist[index];
+
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => DetailPage()),
+                  );
+                },
+                child: ShowcaseCardWithoutEpisode(
+                  poster: anime.poster,
+                  rating: anime.score,
+                  totalEpisode: anime.episodes,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // Widget showcaseCardList(BuildContext context, List<HomeAnimeItem> animelist) {
+  //   return SizedBox(
+  //     height: 230,
+  //     child: Padding(
+  //       padding: const EdgeInsets.only(left: 15),
+  //       child: ListView.builder(
+  //         scrollDirection: Axis.horizontal,
+  //         itemCount: animelist.length,
+  //         itemBuilder: (context, index) {
+  //           final anime = animelist[index];
+
+  //           return Padding(
+  //             padding: const EdgeInsets.only(right: 8),
+  //             child: showcaseCardItem(
+  //               context: context,
+  //               poster: anime.poster,
+  //               lastEpisode: anime.episodes,
+  //               rating: anime.score,
+  //               onTap: () {
+  //                 Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(builder: (_) => DetailPage()),
+  //                 );
+  //               },
+  //             ),
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 }
-
-//   Widget ShowcaseCard() {
-//     return Stack(
-//       children: [
-//         Container(
-//           height: 230,
-//           width: 150,
-//           decoration: BoxDecoration(
-//             borderRadius: BorderRadius.circular(10),
-//             image: DecorationImage(
-//               image: AssetImage(
-//                 'assets/images/background-header.jpg',
-//               ), // atau .png
-//               fit: BoxFit.cover,
-//             ),
-//           ),
-//         ),
-
-//         Positioned(
-//           top: 10,
-//           left: 10,
-//           child: Container(
-//             decoration: BoxDecoration(
-//               color: AppColors.softGreen,
-//               borderRadius: BorderRadius.circular(8),
-//             ),
-//             child: Padding(
-//               // padding: EdgeInsets.all(8),
-//               padding: EdgeInsetsGeometry.symmetric(
-//                 horizontal: 12,
-//                 vertical: 6,
-//               ),
-//               child: Text(
-//                 "8,7",
-//                 style: TextStyle(
-//                   fontSize: 14,
-//                   fontFamily: "Urbanist",
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ),
-
-//         Positioned(
-//           bottom: 10,
-//           left: 10,
-//           child: Text(
-//             "1",
-//             style: TextStyle(
-//               fontSize: 48,
-//               fontFamily: "Urbanist",
-//               fontWeight: FontWeight.bold,
-//               color: Colors.white,
-//             ),
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
