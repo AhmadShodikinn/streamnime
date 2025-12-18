@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/preferences_page.dart';
+import 'package:streaming_app/presentation/video_player_page.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({Key? key}) : super(key: key);
@@ -224,7 +225,18 @@ class _DetailPageState extends State<DetailPage> {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       // Your button logic here
-                      print('Button pressed!');
+                      // print('Button pressed!');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VideoPlayerPage(
+                            title: "Test URL",
+                            description: "Test description URL",
+                            videoUrl:
+                                "https://desustream.info/dstream/moedesu/v3/index.php?id=TlZJSFdyNVF4alVPajVsNFVzSEo0K251eUUwbHYxeVhOVllOWkppYVdzVT0=",
+                          ),
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.play_circle),
                     label: const Text('Play'),
