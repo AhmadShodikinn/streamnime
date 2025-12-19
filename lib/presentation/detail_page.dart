@@ -1,12 +1,19 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:streaming_app/bloc/detail/detail_bloc.dart';
+import 'package:streaming_app/bloc/detail/detail_event.dart';
+import 'package:streaming_app/bloc/detail/detail_state.dart';
+import 'package:streaming_app/data/models/detail_anime_model.dart';
+import 'package:streaming_app/data/repository/detail_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/preferences_page.dart';
 import 'package:streaming_app/presentation/video_player_page.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key? key}) : super(key: key);
+  final String animeId;
+  const DetailPage({Key? key, required this.animeId}) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -18,17 +25,54 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       // body: ShowcaseHeaderDetail(),
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            ShowcaseHeaderDetail(),
-            ShowcaseInformationDetail(),
-            ShowcaseInformationEpisodes(),
-            PreferencesPage(),
-          ],
+      body: BlocProvider(
+        create: (_) =>
+            DetailBloc(DetailAnimeRepository())
+              ..add(FetchDetailAnimeData(widget.animeId)),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: BlocBuilder<DetailBloc, DetailState>(
+            builder: (context, state) {
+              if (state is DetailLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is DetailLoaded) {
+                final detailList = state.detailAnimeModel.data;
+                final poster = state.detailAnimeModel.data.poster;
+                final recomendedList =
+                    state.detailAnimeModel.data.recommendedAnimeList;
+
+                return Padding(
+                  padding: EdgeInsetsGeometry.zero,
+                  child: ListView(
+                    children: [
+                      ShowcaseHeaderDetail(poster),
+                      ShowcaseInformationDetail(detailList),
+                      ShowcaseInformationEpisodes(),
+                      PreferencesPage(recommendedAnimeList: recomendedList),
+                    ],
+                  ),
+                );
+              } else if (state is DetailError) {
+                return Center(child: Text(state.message));
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
+
+      // body: SafeArea(
+      //   child: ListView(
+      //     padding: EdgeInsets.zero,
+      //     children: [
+      //       ShowcaseHeaderDetail(),
+      //       ShowcaseInformationDetail(),
+      //       ShowcaseInformationEpisodes(),
+      //       PreferencesPage(),
+      //     ],
+      //   ),
+      // ),
 
       // body: ListView(
       //   children: [
@@ -41,15 +85,12 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   // header images
-  Widget ShowcaseHeaderDetail() {
+  Widget ShowcaseHeaderDetail(String poster) {
     return Container(
       height: 250,
       width: double.infinity,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/background-header.jpg'), // atau .png
-          fit: BoxFit.cover,
-        ),
+      decoration: BoxDecoration(
+        image: DecorationImage(image: NetworkImage(poster), fit: BoxFit.cover),
       ),
       child: Stack(
         children: [
@@ -75,7 +116,14 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   // information detail
-  Widget ShowcaseInformationDetail() {
+  Widget ShowcaseInformationDetail(DetailAnimeData animeList) {
+    String aired = animeList.aired;
+    String trimAired = aired.split(',').last.trim();
+
+    final String genres = animeList.genreList
+        .map((genreList) => genreList.title)
+        .join(', ');
+
     return Container(
       child: Padding(
         padding: EdgeInsetsGeometry.all(15),
@@ -88,7 +136,7 @@ class _DetailPageState extends State<DetailPage> {
               children: [
                 Expanded(
                   child: Text(
-                    "Demon Slayer (Kimetsu no Yaiba Mugen Ressha-hen)",
+                    animeList.title,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 26,
@@ -126,7 +174,7 @@ class _DetailPageState extends State<DetailPage> {
                   color: AppColors.softGreen,
                 ),
                 Text(
-                  "9.8",
+                  animeList.score,
                   style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.softGreen,
@@ -140,7 +188,7 @@ class _DetailPageState extends State<DetailPage> {
                   color: AppColors.softGreen,
                 ),
                 Text(
-                  "2022",
+                  trimAired,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -224,8 +272,6 @@ class _DetailPageState extends State<DetailPage> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      // Your button logic here
-                      // print('Button pressed!');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -263,10 +309,6 @@ class _DetailPageState extends State<DetailPage> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: BorderSide(width: 2, color: AppColors.softGreen),
-                      // padding: const EdgeInsets.symmetric(
-                      //   horizontal: 18,
-                      //   vertical: 10,
-                      // ),
                     ),
                   ),
                 ),
@@ -274,19 +316,24 @@ class _DetailPageState extends State<DetailPage> {
             ),
             Padding(
               padding: EdgeInsetsGeometry.only(right: 15),
-              child: Text(
-                "Genre: Action, Martial Arts, Adventure, Dark Fantasy, Thriller, Demon",
-                style: TextStyle(
-                  fontFamily: "Urbanist",
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  genres,
+                  // "Genre: Action, Martial Arts, Adventure, Dark Fantasy, Thriller, Demon",
+                  style: TextStyle(
+                    fontFamily: "Urbanist",
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
               ),
             ),
             ExpandableText(
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+              animeList.synopsis.paragraphs.join(' '),
+              // "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
               expandText: "View more",
               maxLines: 3,
               linkColor: AppColors.softGreen,

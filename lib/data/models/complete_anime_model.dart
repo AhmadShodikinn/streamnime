@@ -1,3 +1,5 @@
+import 'package:streaming_app/data/models/anime_item_model.dart';
+
 class CompleteAnimeModel {
   final String status;
   final String creator;
@@ -49,22 +51,30 @@ class CompleteAnimeData {
   }
 }
 
-class CompleteAnimeItem {
+class CompleteAnimeItem implements AnimeItem {
+  @override
   final String title;
+  @override
   final String poster;
-  final int episodes;
-  final String score;
-  final String lastReleaseDate;
+  @override
+  final int? episodes;
+  @override
+  final String? score;
+  @override
+  final String? lastReleaseDate;
+  @override
   final String animeId;
+  @override
   final String href;
+  @override
   final String otakudesuUrl;
 
   CompleteAnimeItem({
     required this.title,
     required this.poster,
-    required this.episodes,
-    required this.score,
-    required this.lastReleaseDate,
+    this.episodes,
+    this.score,
+    this.lastReleaseDate,
     required this.animeId,
     required this.href,
     required this.otakudesuUrl,

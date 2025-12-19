@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:streaming_app/data/models/detail_anime_model.dart';
 import 'package:streaming_app/presentation/completed_page.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/widget/showcase_item_grid.dart';
@@ -53,7 +54,8 @@ import 'package:streaming_app/presentation/widget/showcase_item_grid.dart';
 // }
 
 class PreferencesPage extends StatelessWidget {
-  const PreferencesPage({super.key});
+  final List<RecommendedAnimeItem> recommendedAnimeList;
+  const PreferencesPage({super.key, required this.recommendedAnimeList});
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +96,7 @@ class PreferencesPage extends StatelessWidget {
                 children: [
                   Padding(
                     padding: EdgeInsetsGeometry.symmetric(vertical: 15),
-                    child: ShowcaseItemGrid(),
+                    child: ShowcaseItemGrid(recommendedAnimeList),
                   ),
                   const Center(child: Text("No comment")),
                 ],

@@ -283,7 +283,9 @@ class _MainPageState extends State<MainPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => DetailPage()),
+                    MaterialPageRoute(
+                      builder: (_) => DetailPage(animeId: anime.animeId),
+                    ),
                   );
                 },
                 child: ShowcaseCard(
@@ -319,7 +321,9 @@ class _MainPageState extends State<MainPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => DetailPage()),
+                    MaterialPageRoute(
+                      builder: (_) => DetailPage(animeId: anime.animeId),
+                    ),
                   );
                 },
                 child: ShowcaseCardWithoutEpisode(
