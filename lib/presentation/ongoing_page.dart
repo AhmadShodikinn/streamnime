@@ -164,7 +164,6 @@ class _OngoingPageState extends State<OngoingPage> {
       children: [
         Stack(
           children: [
-            // Gambar
             Container(
               height: 220,
               width: 150,
@@ -177,7 +176,6 @@ class _OngoingPageState extends State<OngoingPage> {
               ),
             ),
 
-            // Gradient gelap di bawah
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -185,10 +183,7 @@ class _OngoingPageState extends State<OngoingPage> {
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent, // atas tetap terang
-                      Colors.black87, // bawah gelap
-                    ],
+                    colors: [Colors.transparent, Colors.black87],
                   ),
                 ),
               ),

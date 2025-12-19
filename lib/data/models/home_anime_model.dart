@@ -6,7 +6,7 @@ class HomeAnimeModel {
   final String message;
   final bool ok;
   final HomeData data;
-  final dynamic? pagination;
+  final dynamic pagination;
 
   HomeAnimeModel({
     required this.status,
@@ -37,10 +37,7 @@ class HomeData {
   final HomeCategory ongoing;
   final HomeCategory completed;
 
-  HomeData({
-    required this.ongoing,
-    required this.completed,
-  });
+  HomeData({required this.ongoing, required this.completed});
 
   factory HomeData.fromJson(Map<String, dynamic> json) {
     return HomeData(
