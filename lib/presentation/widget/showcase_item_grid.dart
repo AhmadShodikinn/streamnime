@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_app/data/models/anime_item_model.dart';
-import 'package:streaming_app/data/models/complete_anime_model.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 
 class ShowcaseItemGrid extends StatelessWidget {
@@ -97,7 +96,8 @@ class ShowcaseItemGrid extends StatelessWidget {
             bottom: 15,
             left: 15,
             child: Text(
-              episode.toString(),
+              // episode.toString(),
+              "$episode episode",
               style: TextStyle(
                 fontSize: 14,
                 fontFamily: "Urbanist",

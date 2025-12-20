@@ -8,6 +8,7 @@ import 'package:streaming_app/bloc/detail/detail_state.dart';
 import 'package:streaming_app/data/models/detail_anime_model.dart';
 import 'package:streaming_app/data/repository/detail_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/helper/get_season_anime.dart';
 import 'package:streaming_app/presentation/preferences_page.dart';
 import 'package:streaming_app/presentation/video_player_page.dart';
 
@@ -40,6 +41,11 @@ class _DetailPageState extends State<DetailPage> {
                 final poster = state.detailAnimeModel.data.poster;
                 final recomendedList =
                     state.detailAnimeModel.data.recommendedAnimeList;
+                final episodeList = state.detailAnimeModel.data.episodeList;
+                // final season = if (state.detailAnimeModel.data.title)
+
+                final title = state.detailAnimeModel.data.title;
+                final seasonInfo = getAnimeSeason(title);
 
                 return Padding(
                   padding: EdgeInsetsGeometry.zero,
@@ -47,7 +53,11 @@ class _DetailPageState extends State<DetailPage> {
                     children: [
                       ShowcaseHeaderDetail(poster),
                       ShowcaseInformationDetail(detailList),
-                      ShowcaseInformationEpisodes(),
+                      ShowcaseInformationEpisodes(
+                        poster,
+                        episodeList,
+                        seasonInfo,
+                      ),
                       PreferencesPage(recommendedAnimeList: recomendedList),
                     ],
                   ),
@@ -166,7 +176,7 @@ class _DetailPageState extends State<DetailPage> {
               ],
             ),
             Row(
-              spacing: 12,
+              spacing: 10,
               children: [
                 Icon(
                   FontAwesomeIcons.solidStarHalfStroke,
@@ -174,7 +184,7 @@ class _DetailPageState extends State<DetailPage> {
                   color: AppColors.softGreen,
                 ),
                 Text(
-                  animeList.score,
+                  animeList.score != "" ? animeList.score : 'None',
                   style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.softGreen,
@@ -347,7 +357,11 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   // information episodes
-  Widget ShowcaseInformationEpisodes() {
+  Widget ShowcaseInformationEpisodes(
+    String poster,
+    List<EpisodeItem> episodeList,
+    int season,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -367,7 +381,7 @@ class _DetailPageState extends State<DetailPage> {
               Row(
                 children: [
                   Text(
-                    "Season 2",
+                    "Season $season",
                     style: TextStyle(
                       fontFamily: "Urbanist",
                       fontSize: 14,
@@ -375,18 +389,18 @@ class _DetailPageState extends State<DetailPage> {
                       color: AppColors.softGreen,
                     ),
                   ),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: AppColors.softGreen,
-                  ),
+                  // Icon(
+                  //   Icons.keyboard_arrow_down,
+                  //   size: 20,
+                  //   color: AppColors.softGreen,
+                  // ),
                 ],
               ),
             ],
           ),
         ),
         const SizedBox(height: 10),
-        ShowcaseEpisodeList(context),
+        ShowcaseEpisodeList(context, poster, episodeList),
       ],
     );
   }
@@ -411,18 +425,24 @@ class _DetailPageState extends State<DetailPage> {
   // }
 
   // showcase episode list
-  Widget ShowcaseEpisodeList(BuildContext context) {
+  Widget ShowcaseEpisodeList(
+    BuildContext context,
+    String poster,
+    List<EpisodeItem> episodeList,
+  ) {
     return SizedBox(
       height: 110,
       child: Padding(
         padding: EdgeInsetsGeometry.only(left: 15),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 8,
+          itemCount: episodeList.length,
           itemBuilder: (context, index) {
+            final anime = episodeList[index];
+
             return Padding(
               padding: const EdgeInsets.only(right: 15),
-              child: CardEpisodeShowcase(),
+              child: CardEpisodeShowcase(poster, anime.episodeId),
             );
           },
         ),
@@ -431,39 +451,48 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   // card episodes
-  Widget CardEpisodeShowcase() {
-    return Container(
-      height: 100,
-      width: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        image: DecorationImage(
-          image: AssetImage('assets/images/background-header.jpg'), // atau .png
-          fit: BoxFit.cover,
+  Widget CardEpisodeShowcase(String poster, String episodeid) {
+    return GestureDetector(
+      onTap: () {
+        print(episodeid);
+      },
+      child: Container(
+        height: 100,
+        width: 150,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          // image: DecorationImage(
+          //   image: AssetImage('assets/images/background-header.jpg'), // atau .png
+          //   fit: BoxFit.cover,
+          // ),
+          image: DecorationImage(
+            image: NetworkImage(poster),
+            fit: BoxFit.cover,
+          ),
+          gradient: LinearGradient(
+            begin: FractionalOffset.topCenter,
+            end: FractionalOffset.bottomCenter,
+            colors: [Colors.grey.withOpacity(0.0), Colors.black],
+            stops: [0.0, 1.0],
+          ),
         ),
-        gradient: LinearGradient(
-          begin: FractionalOffset.topCenter,
-          end: FractionalOffset.bottomCenter,
-          colors: [Colors.grey.withOpacity(0.0), Colors.black],
-          stops: [0.0, 1.0],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Center(child: Icon(Icons.play_circle, color: Colors.white)),
-          Positioned(
-            bottom: 5,
-            left: 5,
-            child: Text(
-              "Episode 1",
-              style: TextStyle(
-                fontFamily: "Urbanist",
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+        child: Stack(
+          children: [
+            Center(child: Icon(Icons.play_circle, color: Colors.white)),
+            Positioned(
+              bottom: 5,
+              left: 5,
+              child: Text(
+                "Episode 1",
+                style: TextStyle(
+                  fontFamily: "Urbanist",
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
