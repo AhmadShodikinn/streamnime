@@ -14,6 +14,26 @@ class OngoingPage extends StatefulWidget {
 }
 
 class _OngoingPageState extends State<OngoingPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        context.read<OngoingBloc>().add(FetchMoreOngoingAnimeData());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +42,7 @@ class _OngoingPageState extends State<OngoingPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         title: const Text(
           "Ongoing Anime",
           style: TextStyle(
@@ -32,56 +52,103 @@ class _OngoingPageState extends State<OngoingPage> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search), // The icon itself
-            tooltip: 'Searcn', // The tooltip for long press/hover
-            onPressed: () {
-              // Define the action to perform when the icon is pressed
-              print('button pressed!');
-            },
-          ),
-        ],
       ),
-      // body: SectionCard(),
-      body: BlocProvider(
-        create: (_) =>
-            OngoingBloc(OngoingAnimeRepository())..add(FetchOngoingAnimeData()),
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: BlocBuilder<OngoingBloc, OngoingState>(
-            builder: (context, state) {
-              if (state is OngoingLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is OngoingLoaded) {
-                final ongoingList = state.ongoingData.data.animeList;
+      body: BlocBuilder<OngoingBloc, OngoingState>(
+        builder: (context, state) {
+          if (state is OngoingLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is OngoingLoaded) {
+            final ongoingList = state.ongoingData.data.animeList;
 
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: ongoingList.length,
-                  itemBuilder: (context, index) {
-                    final animeData = ongoingList[index];
-
-                    return SectionCard(
-                      title: animeData.title,
-                      poster: animeData.poster,
-                      lastEpisode: animeData.episodes.toString(),
-                      lastReleaseDate: animeData.latestReleaseDate,
-                      releaseDay: animeData.releaseDay,
-                    );
-                  },
+            return ListView.builder(
+              controller: _scrollController,
+              itemCount: ongoingList.length,
+              itemBuilder: (context, index) {
+                final animeData = ongoingList[index];
+                return SectionCard(
+                  title: animeData.title,
+                  poster: animeData.poster,
+                  lastEpisode: animeData.episodes.toString(),
+                  lastReleaseDate: animeData.latestReleaseDate,
+                  releaseDay: animeData.releaseDay,
                 );
-              } else if (state is OngoingError) {
-                return Center(child: Text(state.message));
-              }
+              },
+            );
+          } else if (state is OngoingError) {
+            return Center(child: Text(state.message));
+          }
 
-              return const SizedBox.shrink();
-            },
-          ),
-        ),
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return BlocProvider(
+  //     create: (_) =>
+  //         OngoingBloc(OngoingAnimeRepository())..add(FetchOngoingAnimeData(1)),
+  //     child: Scaffold(
+  //       backgroundColor: Colors.white,
+  //       appBar: AppBar(
+  //         backgroundColor: Colors.white,
+  //         elevation: 0,
+  //         titleSpacing: 0,
+  //         iconTheme: IconThemeData(color: Colors.black),
+  //         title: const Text(
+  //           "Ongoing Anime",
+  //           style: TextStyle(
+  //             color: Colors.black,
+  //             fontFamily: "Urbanist",
+  //             fontSize: 24,
+  //             fontWeight: FontWeight.w700,
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           IconButton(
+  //             icon: const Icon(Icons.search), // The icon itself
+  //             tooltip: 'Searcn', // The tooltip for long press/hover
+  //             onPressed: () {
+  //               // Define the action to perform when the icon is pressed
+  //               print('button pressed!');
+  //             },
+  //           ),
+  //         ],
+  //       ),
+  //       body: BlocBuilder<OngoingBloc, OngoingState>(
+  //         builder: (context, state) {
+  //           if (state is OngoingLoading) {
+  //             return const Center(child: CircularProgressIndicator());
+  //           } else if (state is OngoingLoaded) {
+  //             final ongoingList = state.ongoingData.data.animeList;
+
+  //             return ListView.builder(
+  //               controller: _scrollController,
+  //               scrollDirection: Axis.vertical,
+  //               itemCount: ongoingList.length,
+  //               itemBuilder: (context, index) {
+  //                 final animeData = ongoingList[index];
+
+  //                 return SectionCard(
+  //                   title: animeData.title,
+  //                   poster: animeData.poster,
+  //                   lastEpisode: animeData.episodes.toString(),
+  //                   lastReleaseDate: animeData.latestReleaseDate,
+  //                   releaseDay: animeData.releaseDay,
+  //                 );
+  //               },
+  //             );
+  //           } else if (state is OngoingError) {
+  //             return Center(child: Text(state.message));
+  //           }
+
+  //           return const SizedBox.shrink();
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget SectionCard({
     required String title,

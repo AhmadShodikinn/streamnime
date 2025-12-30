@@ -1,5 +1,9 @@
 abstract class OngoingEvent {}
 
 class FetchOngoingAnimeData extends OngoingEvent {
-  FetchOngoingAnimeData();
+  final int page;
+
+  FetchOngoingAnimeData(this.page);
 }
+
+class FetchMoreOngoingAnimeData extends OngoingEvent {}

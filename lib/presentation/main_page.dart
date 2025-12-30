@@ -4,8 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/bloc/home/home_bloc.dart';
 import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
+import 'package:streaming_app/bloc/ongoing/ongoing_bloc.dart';
+import 'package:streaming_app/bloc/ongoing/ongoing_event.dart';
 import 'package:streaming_app/data/models/home_anime_model.dart';
 import 'package:streaming_app/data/repository/home_anime_repository.dart';
+import 'package:streaming_app/data/repository/ongoing_anime_repository.dart';
 import 'package:streaming_app/presentation/completed_page.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
@@ -43,7 +46,15 @@ class _MainPageState extends State<MainPage> {
                     ContentSection("Ongoing Anime", () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => OngoingPage()),
+                        // MaterialPageRoute(builder: (context) => OngoingPage()),
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider(
+                            create: (_) =>
+                                OngoingBloc(OngoingAnimeRepository())
+                                  ..add(FetchOngoingAnimeData(1)),
+                            child: const OngoingPage(),
+                          ),
+                        ),
                       );
                     }),
                     ongoingShowcaseList(

@@ -4,8 +4,9 @@ import 'package:streaming_app/data/models/ongoing_anime_model.dart';
 import 'package:streaming_app/presentation/constant/app_url.dart';
 
 class OngoingAnimeRepository {
-  Future<OngoingAnimeModel> fetchOngoingAnimeData() async {
-    final url = Uri.parse('${AppUrl.url}anime/ongoing-anime');
+  Future<OngoingAnimeModel> fetchOngoingAnimeData(int page) async {
+    // final url = Uri.parse('${AppUrl.url}anime/ongoing-anime');
+    final url = Uri.parse('${AppUrl.url}anime/ongoing-anime?page=$page');
 
     try {
       final response = await http.get(url);
