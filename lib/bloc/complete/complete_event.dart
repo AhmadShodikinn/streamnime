@@ -1,5 +1,9 @@
 abstract class CompleteEvent {}
 
 class FetchCompleteAnimeData extends CompleteEvent {
-  FetchCompleteAnimeData();
+  final int page;
+
+  FetchCompleteAnimeData(this.page);
 }
+
+class FetchMoreCompleteAnimeData extends CompleteEvent {}

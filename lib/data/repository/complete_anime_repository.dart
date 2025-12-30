@@ -4,8 +4,8 @@ import 'package:streaming_app/data/models/complete_anime_model.dart';
 import 'package:streaming_app/presentation/constant/app_url.dart';
 
 class CompleteAnimeRepository {
-  Future<CompleteAnimeModel> fetchCompleteAnimeData() async {
-    final url = Uri.parse('${AppUrl.url}anime/complete-anime');
+  Future<CompleteAnimeModel> fetchCompleteAnimeData(int page) async {
+    final url = Uri.parse('${AppUrl.url}anime/complete-anime?page=$page');
 
     try {
       final response = await http.get(url);

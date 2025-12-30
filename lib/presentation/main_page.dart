@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:streaming_app/bloc/complete/complete_bloc.dart';
+import 'package:streaming_app/bloc/complete/complete_event.dart';
 import 'package:streaming_app/bloc/home/home_bloc.dart';
 import 'package:streaming_app/bloc/home/home_event.dart';
 import 'package:streaming_app/bloc/home/home_state.dart';
 import 'package:streaming_app/bloc/ongoing/ongoing_bloc.dart';
 import 'package:streaming_app/bloc/ongoing/ongoing_event.dart';
 import 'package:streaming_app/data/models/home_anime_model.dart';
+import 'package:streaming_app/data/repository/complete_anime_repository.dart';
 import 'package:streaming_app/data/repository/home_anime_repository.dart';
 import 'package:streaming_app/data/repository/ongoing_anime_repository.dart';
 import 'package:streaming_app/presentation/completed_page.dart';
@@ -65,8 +68,16 @@ class _MainPageState extends State<MainPage> {
                     ContentSection("Completed Anime", () {
                       Navigator.push(
                         context,
+                        // MaterialPageRoute(
+                        //   builder: (context) => CompletedPage(),
+                        // ),
                         MaterialPageRoute(
-                          builder: (context) => CompletedPage(),
+                          builder: (_) => BlocProvider(
+                            create: (_) =>
+                                CompleteBloc(CompleteAnimeRepository())
+                                  ..add(FetchCompleteAnimeData(1)),
+                            child: const CompletedPage(),
+                          ),
                         ),
                       );
                     }),
@@ -259,6 +270,7 @@ class _MainPageState extends State<MainPage> {
 
   Widget showcaseCardItem({
     required BuildContext context,
+    required String animeId,
     required String poster,
     required int lastEpisode,
     String? rating,
@@ -267,6 +279,7 @@ class _MainPageState extends State<MainPage> {
     return GestureDetector(
       onTap: onTap,
       child: ShowcaseCard(
+        animeId: animeId,
         poster: poster,
         lastEpisode: lastEpisode,
         rating: rating,
@@ -300,6 +313,7 @@ class _MainPageState extends State<MainPage> {
                   );
                 },
                 child: ShowcaseCard(
+                  animeId: anime.animeId,
                   poster: anime.poster,
                   lastEpisode: anime.episodes,
                   rating: null, // ongoing tidak punya score

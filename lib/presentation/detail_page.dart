@@ -442,7 +442,7 @@ class _DetailPageState extends State<DetailPage> {
 
             return Padding(
               padding: const EdgeInsets.only(right: 15),
-              child: CardEpisodeShowcase(poster, anime.episodeId),
+              child: CardEpisodeShowcase(poster, anime.eps!, anime.episodeId),
             );
           },
         ),
@@ -451,7 +451,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   // card episodes
-  Widget CardEpisodeShowcase(String poster, String episodeid) {
+  Widget CardEpisodeShowcase(String poster, int eps, String episodeid) {
     return GestureDetector(
       onTap: () {
         print(episodeid);
@@ -483,7 +483,7 @@ class _DetailPageState extends State<DetailPage> {
               bottom: 5,
               left: 5,
               child: Text(
-                "Episode 1",
+                "Episode $eps",
                 style: TextStyle(
                   fontFamily: "Urbanist",
                   fontWeight: FontWeight.w600,

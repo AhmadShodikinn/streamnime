@@ -106,7 +106,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   int selectedQuality = 1;
 
   Widget watchServerSelector() {
-    final qualities = ['360p', '480p', '720p'];
+    // final qualities = ['360p', '480p', '720p'];
 
     return Padding(
       padding: const EdgeInsets.all(15),

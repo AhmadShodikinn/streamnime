@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:streaming_app/bloc/ongoing/ongoing_bloc.dart';
 import 'package:streaming_app/bloc/ongoing/ongoing_event.dart';
 import 'package:streaming_app/bloc/ongoing/ongoing_state.dart';
-import 'package:streaming_app/data/repository/ongoing_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/detail_page.dart';
 
 class OngoingPage extends StatefulWidget {
   const OngoingPage({Key? key}) : super(key: key);
@@ -66,6 +66,7 @@ class _OngoingPageState extends State<OngoingPage> {
               itemBuilder: (context, index) {
                 final animeData = ongoingList[index];
                 return SectionCard(
+                  animeId: animeData.animeId,
                   title: animeData.title,
                   poster: animeData.poster,
                   lastEpisode: animeData.episodes.toString(),
@@ -151,6 +152,7 @@ class _OngoingPageState extends State<OngoingPage> {
   // }
 
   Widget SectionCard({
+    required String animeId,
     required String title,
     required String poster,
     required String lastEpisode,
@@ -203,7 +205,13 @@ class _OngoingPageState extends State<OngoingPage> {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         // Your button logic here
-                        print('Button pressed!');
+                        // print('Button pressed!');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailPage(animeId: animeId),
+                          ),
+                        );
                       },
                       icon: const Icon(Icons.play_circle),
                       label: const Text('Play'),
