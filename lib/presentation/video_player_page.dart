@@ -65,7 +65,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         titleSpacing: 0,
         iconTheme: IconThemeData(color: Colors.black),
         title: const Text(
-          "Detail anime",
+          "Kimetsu no Yaiba Season 4",
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: Colors.black,
