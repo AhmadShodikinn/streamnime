@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:streaming_app/bloc/watch/watch_bloc.dart';
+import 'package:streaming_app/bloc/watch/watch_event.dart';
+import 'package:streaming_app/bloc/watch/watch_state.dart';
+import 'package:streaming_app/data/models/detail_anime_nonton.dart';
+import 'package:streaming_app/data/repository/detail_anime_nonton_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class VideoPlayerPage extends StatefulWidget {
+  final String epsId;
   final String videoUrl;
   final String title;
   final String description;
 
   const VideoPlayerPage({
     super.key,
+    required this.epsId,
     required this.videoUrl,
     required this.title,
     required this.description,
@@ -20,6 +28,7 @@ class VideoPlayerPage extends StatefulWidget {
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late final WebViewController _controller;
+  String videoUrl = "";
   bool _isVideoPlaying = false;
   bool _isEpisodeListVisible = false;
 
@@ -30,7 +39,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     // Initialize the WebView
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(widget.videoUrl));
+      ..loadRequest(Uri.parse(videoUrl));
 
     // Set the NavigationDelegate to listen for page load events
     _controller.setNavigationDelegate(
@@ -75,22 +84,75 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Screenview(),
-            watchServerSelector(),
-            dividerSection(),
+      body: BlocProvider(
+        create: (_) =>
+            WatchBloc(DetailAnimeNontonRepository())
+              ..add(FetchDetailAnimeNonton(widget.epsId)),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: BlocBuilder<WatchBloc, WatchState>(
+            builder: (context, state) {
+              if (state is WatchLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is WatchLoaded) {
+                final episodeTitle = state.detailAnimeNontonModel.data.title;
+                final releaseTime =
+                    state.detailAnimeNontonModel.data.releaseTime;
+                videoUrl =
+                    state.detailAnimeNontonModel.data.defaultStreamingUrl;
+                final downloadList =
+                    state.detailAnimeNontonModel.data.downloadUrl.qualities;
 
-            // Download section
-            ...dummyDownloads.map((e) {
-              return downloadSection(
-                quality: e['quality'],
-                items: List<String>.from(e['items']),
-              );
-            }).toList(),
-          ],
+                return Padding(
+                  padding: EdgeInsetsGeometry.zero,
+                  child: ListView(
+                    children: [
+                      Screenview(),
+                      watchServerSelector(episodeTitle, releaseTime),
+                      dividerSection(),
+                      downloadSection(
+                        quality: "480",
+                        // downloadList: downloadList,
+                        downloadQuality: downloadList,
+                        // downloadList: downloadList,
+                      ),
+
+                      // // Download section
+                      // ...dummyDownloads.map((e) {
+                      //   return downloadSection(
+                      //     quality: e['quality'],
+                      //     items: List<String>.from(e['items']),
+                      //   );
+                      // }).toList(),
+                    ],
+                  ),
+                );
+              } else if (state is WatchError) {
+                return Center(child: Text(state.message));
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
         ),
+
+        // child: SingleChildScrollView(
+        //   child: Column(
+        // children: [
+        //   Screenview(),
+        //   watchServerSelector(),
+        //   dividerSection(),
+
+        //   // Download section
+        //   ...dummyDownloads.map((e) {
+        //     return downloadSection(
+        //       quality: e['quality'],
+        //       items: List<String>.from(e['items']),
+        //     );
+        //   }).toList(),
+        // ],
+        //   ),
+        // ),
       ),
     );
   }
@@ -105,7 +167,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   int selectedQuality = 1;
 
-  Widget watchServerSelector() {
+  Widget watchServerSelector(String titleEpisode, String releaseTime) {
     // final qualities = ['360p', '480p', '720p'];
 
     return Padding(
@@ -113,7 +175,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       child: Column(
         children: [
           Text(
-            "Kimetsu no Yaiba: Mugen Ressha-hen Episode 1 Subtitle Indonesia",
+            // "Kimetsu no Yaiba: Mugen Ressha-hen Episode 1 Subtitle Indonesia",
+            titleEpisode,
             style: TextStyle(
               fontFamily: "Urbanist",
               fontSize: 18,
@@ -123,7 +186,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              "Release on 9:24 pm",
+              releaseTime,
               style: TextStyle(fontSize: 16, fontFamily: "Urbanist"),
             ),
           ),
@@ -197,8 +260,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   Widget downloadSection({
-    required String quality,
-    required List<String> items,
+    String? quality,
+    // required List<String> items,
+    // required List<DownloadUrl> downloadList,
+    required List<DownloadQuality> downloadQuality,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -212,38 +277,46 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           ),
           const SizedBox(height: 6),
 
-          /// List download (inline)
-          Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: List.generate(items.length * 2 - 1, (index) {
-              if (index.isOdd) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    "|",
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                );
-              }
-
-              final i = index ~/ 2;
-              return InkWell(
-                onTap: () {
-                  debugPrint("Download ${items[i]} - $quality");
-                },
-                child: Text(
-                  items[i],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: AppColors.softGreen,
-                    fontFamily: "Urbanist",
-                  ),
-                ),
-              );
-            }),
+          ListView.builder(
+            itemCount: downloadQuality.length,
+            itemBuilder: (context, index) {
+              final downloadUrl = downloadQuality[index];
+              return ListTile(title: Text(downloadUrl.title));
+            },
           ),
+
+          /// List download (inline)
+          // Wrap(
+          //   alignment: WrapAlignment.center,
+          //   crossAxisAlignment: WrapCrossAlignment.center,
+          //   children: List.generate(items.length * 2 - 1, (index) {
+          //     if (index.isOdd) {
+          //       return const Padding(
+          //         padding: EdgeInsets.symmetric(horizontal: 6),
+          //         child: Text(
+          //           "|",
+          //           style: TextStyle(fontSize: 18, color: Colors.grey),
+          //         ),
+          //       );
+          //     }
+
+          //     final i = index ~/ 2;
+          //     return InkWell(
+          //       onTap: () {
+          //         debugPrint("Download ${items[i]} - $quality");
+          //       },
+          //       child: Text(
+          //         items[i],
+          //         style: const TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 18,
+          //           color: AppColors.softGreen,
+          //           fontFamily: "Urbanist",
+          //         ),
+          //       ),
+          //     );
+          //   }),
+          // ),
         ],
       ),
     );

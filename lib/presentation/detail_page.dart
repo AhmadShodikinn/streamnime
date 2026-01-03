@@ -286,6 +286,7 @@ class _DetailPageState extends State<DetailPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => VideoPlayerPage(
+                            epsId: animeList.episodeList.first.episodeId,
                             title: "Test URL",
                             description: "Test description URL",
                             videoUrl:
