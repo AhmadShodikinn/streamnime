@@ -87,16 +87,39 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                     _loadVideo(data.data.defaultStreamingUrl);
                   });
 
-                  return ListView(
+                  return Stack(
                     children: [
-                      _videoPlayer(),
-                      _episodeInfo(data.data),
-                      _divider("Server selection"),
-                      _serverSelection(data.data.server.qualities, context),
-                      _divider("Download list"),
-                      _downloadSection(data.data.downloadUrl.qualities),
+                      ListView(
+                        children: [
+                          _videoPlayer(),
+                          _episodeInfo(data.data),
+                          _divider("Server selection"),
+                          _serverSelection(data.data.server.qualities, context),
+                          _divider("Download list"),
+                          _downloadSection(data.data.downloadUrl.qualities),
+                        ],
+                      ),
+
+                      if (isServerLoading)
+                        const Positioned.fill(
+                          child: ColoredBox(
+                            color: Colors.white,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                        ),
                     ],
                   );
+
+                  // return ListView(
+                  //   children: [
+                  //     _videoPlayer(),
+                  //     _episodeInfo(data.data),
+                  //     _divider("Server selection"),
+                  //     _serverSelection(data.data.server.qualities, context),
+                  //     _divider("Download list"),
+                  //     _downloadSection(data.data.downloadUrl.qualities),
+                  //   ],
+                  // );
                 }
 
                 return const SizedBox.shrink();
@@ -309,45 +332,51 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               const SizedBox(height: 6),
 
               hasUrls
-                  ? Row(
-                      spacing: 8,
-                      children: quality.urls.map((url) {
-                        return InkWell(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(16),
-                                ),
-                              ),
-                              builder: (_) {
-                                return _bottomSheetContent(
-                                  context,
-                                  quality,
-                                  url,
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: quality.urls.map((url) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: InkWell(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(16),
+                                    ),
+                                  ),
+                                  builder: (_) {
+                                    return _bottomSheetContent(
+                                      context,
+                                      quality,
+                                      url,
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: AppColors.softGreen.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              url.title,
-                              style: const TextStyle(
-                                color: AppColors.softGreen,
-                                fontWeight: FontWeight.bold,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.softGreen.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  url.title,
+                                  style: const TextStyle(
+                                    color: AppColors.softGreen,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          );
+                        }).toList(),
+                      ),
                     )
                   : const Text(
                       "Tidak tersedia",

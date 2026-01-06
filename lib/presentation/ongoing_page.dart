@@ -201,7 +201,7 @@ class _OngoingPageState extends State<OngoingPage> {
                   // ),
                   SizedBox(height: 15),
                   Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.centerLeft,
                     child: ElevatedButton.icon(
                       onPressed: () {
                         // Your button logic here

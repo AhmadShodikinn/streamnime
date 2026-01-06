@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/main_page.dart';
+import 'package:streaming_app/presentation/schedule_page.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LayoutNavbar extends StatefulWidget {
   @override
@@ -12,7 +14,7 @@ class _LayoutNavbarState extends State<LayoutNavbar> {
 
   final List<Widget> _pages = [
     MainPage(),
-    Center(child: Text('Halaman Menu 2')),
+    ReleasePage(),
     Center(child: Text('Halaman Menu 3')),
     Center(child: Text('Halaman Menu 4')),
     Center(child: Text('Halaman Menu 5')),
@@ -30,28 +32,40 @@ class _LayoutNavbarState extends State<LayoutNavbar> {
       extendBody: true,
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(
-        // decoration: BoxDecoration(
-        //   color: Colors.white.withOpacity(0.95),
-        //   borderRadius: BorderRadius.only(
-        //     topLeft: Radius.circular(30),
-        //     topRight: Radius.circular(30),
-        //   ),
-        //   boxShadow: [
-        //     BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 15),
-        //   ],
-        // ),
+        decoration: BoxDecoration(
+          // color: Colors.white.withOpacity(0.95),
+          // borderRadius: BorderRadius.only(
+          //   topLeft: Radius.circular(30),
+          //   topRight: Radius.circular(30),
+          // ),
+          boxShadow: [
+            BoxShadow(color: Colors.black38, spreadRadius: 0, blurRadius: 10),
+          ],
+        ),
         child: ClipRRect(
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+            topLeft: Radius.circular(15),
+            topRight: Radius.circular(15),
           ),
           child: BottomNavigationBar(
+            backgroundColor: Colors.white,
             showSelectedLabels: true,
             showUnselectedLabels: true,
             type: BottomNavigationBarType.fixed,
             // selectedItemColor: Colors.amber,
             selectedItemColor: AppColors.softGreen,
             unselectedItemColor: Colors.grey,
+            selectedLabelStyle: TextStyle(
+              fontFamily: "Urbanist",
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+            unselectedLabelStyle: TextStyle(
+              fontFamily: "Urbanist",
+              fontSize: 14,
+            ),
+            selectedIconTheme: IconThemeData(size: 22),
+            unselectedIconTheme: IconThemeData(size: 22),
             currentIndex: _currentIndex,
             onTap: (index) {
               setState(() {
@@ -59,21 +73,29 @@ class _LayoutNavbarState extends State<LayoutNavbar> {
               });
             },
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
-                icon: Icon(Icons.date_range),
+                // icon: Icon(Icons.home),
+                icon: FaIcon(FontAwesomeIcons.house),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                // icon: Icon(Icons.date_range),
+                icon: FaIcon(FontAwesomeIcons.calendarDays),
                 label: 'Release',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.bookmark),
+                // icon: Icon(Icons.bookmark),
+                icon: FaIcon(FontAwesomeIcons.bookmark),
                 label: 'My List',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.download),
+                // icon: Icon(Icons.download),
+                icon: FaIcon(FontAwesomeIcons.download),
                 label: 'Download',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
+                // icon: Icon(Icons.person),
+                icon: FaIcon(FontAwesomeIcons.user),
                 label: 'Profile',
               ),
             ],
@@ -82,44 +104,4 @@ class _LayoutNavbarState extends State<LayoutNavbar> {
       ),
     );
   }
-
-  // Widget get bodyContent {
-  //   return MainPage();
-  // }
-
-  // Widget get bottomNavigationBar {
-  //   return ClipRRect(
-  //     borderRadius: BorderRadius.only(
-  //       topLeft: Radius.circular(30),
-  //       topRight: Radius.circular(30),
-  //     ),
-  //     child: BottomNavigationBar(
-  //       showSelectedLabels: true,
-  //       showUnselectedLabels: true,
-  //       type: BottomNavigationBarType.fixed,
-  //       // selectedItemColor: Colors.amber,
-  //       selectedItemColor: AppColors.softGreen,
-  //       unselectedItemColor: Colors.grey,
-  //       currentIndex: _currentIndex,
-  //       onTap: (index) {
-  //         setState(() {
-  //           _currentIndex = index;
-  //         });
-  //       },
-  //       items: const [
-  //         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-  //         BottomNavigationBarItem(
-  //           icon: Icon(Icons.date_range),
-  //           label: 'Release',
-  //         ),
-  //         BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: 'My List'),
-  //         BottomNavigationBarItem(
-  //           icon: Icon(Icons.download),
-  //           label: 'Download',
-  //         ),
-  //         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
