@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:streaming_app/data/models/change_anime_server.dart';
 import 'package:streaming_app/data/models/detail_anime_nonton.dart';
 import 'package:streaming_app/presentation/constant/app_url.dart';
 
@@ -13,6 +14,25 @@ class DetailAnimeNontonRepository {
       if (response.statusCode == 200) {
         final Map<String, dynamic> json = jsonDecode(response.body);
         return DetailAnimeNontonModel.fromJson(json);
+      } else {
+        throw Exception(
+          'Gagal memuat data: ${response.statusCode} - ${response.reasonPhrase}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Load failed: $e');
+    }
+  }
+
+  Future<ChangeAnimeServerModel> ChangeServerNonton(String serverId) async {
+    final url = Uri.parse('${AppUrl.url}anime/server/$serverId');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> json = jsonDecode(response.body);
+        return ChangeAnimeServerModel.fromJson(json);
       } else {
         throw Exception(
           'Gagal memuat data: ${response.statusCode} - ${response.reasonPhrase}',

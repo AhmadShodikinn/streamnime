@@ -5,3 +5,10 @@ class FetchDetailAnimeNonton extends WatchEvent {
 
   FetchDetailAnimeNonton(this.episodeId);
 }
+
+
+class ChangeStreamingServer extends WatchEvent {
+  final String serverId;
+
+  ChangeStreamingServer(this.serverId);
+}

@@ -205,75 +205,75 @@ class _DetailPageState extends State<DetailPage> {
                     fontFamily: "Urbanist",
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.softGreen, width: 1.0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsetsGeometry.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    child: Text(
-                      "13+",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.softGreen,
-                        fontSize: 12,
-                        fontFamily: "Urbanist",
-                        fontWeight: FontWeight.bold,
-                        // color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.softGreen, width: 1.0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsetsGeometry.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    child: Text(
-                      "Japan",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.softGreen,
-                        fontSize: 12,
-                        fontFamily: "Urbanist",
-                        fontWeight: FontWeight.bold,
-                        // color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.softGreen, width: 1.0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsetsGeometry.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    child: Text(
-                      "Subtitle",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.softGreen,
-                        fontSize: 12,
-                        fontFamily: "Urbanist",
-                        fontWeight: FontWeight.bold,
-                        // color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     border: Border.all(color: AppColors.softGreen, width: 1.0),
+                //     borderRadius: BorderRadius.circular(4),
+                //   ),
+                //   child: Padding(
+                //     padding: EdgeInsetsGeometry.symmetric(
+                //       horizontal: 6,
+                //       vertical: 2,
+                //     ),
+                //     child: Text(
+                //       "13+",
+                //       textAlign: TextAlign.center,
+                //       style: TextStyle(
+                //         color: AppColors.softGreen,
+                //         fontSize: 12,
+                //         fontFamily: "Urbanist",
+                //         fontWeight: FontWeight.bold,
+                //         // color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     border: Border.all(color: AppColors.softGreen, width: 1.0),
+                //     borderRadius: BorderRadius.circular(4),
+                //   ),
+                //   child: Padding(
+                //     padding: EdgeInsetsGeometry.symmetric(
+                //       horizontal: 6,
+                //       vertical: 2,
+                //     ),
+                //     child: Text(
+                //       "Japan",
+                //       textAlign: TextAlign.center,
+                //       style: TextStyle(
+                //         color: AppColors.softGreen,
+                //         fontSize: 12,
+                //         fontFamily: "Urbanist",
+                //         fontWeight: FontWeight.bold,
+                //         // color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // Container(
+                //   decoration: BoxDecoration(
+                //     border: Border.all(color: AppColors.softGreen, width: 1.0),
+                //     borderRadius: BorderRadius.circular(4),
+                //   ),
+                //   child: Padding(
+                //     padding: EdgeInsetsGeometry.symmetric(
+                //       horizontal: 6,
+                //       vertical: 2,
+                //     ),
+                //     child: Text(
+                //       "Subtitle",
+                //       textAlign: TextAlign.center,
+                //       style: TextStyle(
+                //         color: AppColors.softGreen,
+                //         fontSize: 12,
+                //         fontFamily: "Urbanist",
+                //         fontWeight: FontWeight.bold,
+                //         // color: Colors.white,
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             Row(
@@ -286,11 +286,8 @@ class _DetailPageState extends State<DetailPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => VideoPlayerPage(
-                            epsId: animeList.episodeList.first.episodeId,
-                            title: "Test URL",
-                            description: "Test description URL",
-                            videoUrl:
-                                "https://desustream.info/dstream/moedesu/v3/index.php?id=TlZJSFdyNVF4alVPajVsNFVzSEo0K251eUUwbHYxeVhOVllOWkppYVdzVT0=",
+                            epsId: animeList.episodeList.last.episodeId,
+                            title: animeList.episodeList.last.title,
                           ),
                         ),
                       );
@@ -431,19 +428,26 @@ class _DetailPageState extends State<DetailPage> {
     String poster,
     List<EpisodeItem> episodeList,
   ) {
+    final reverseEpisodeList = episodeList.reversed.toList();
+
     return SizedBox(
       height: 110,
       child: Padding(
         padding: EdgeInsetsGeometry.only(left: 15),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: episodeList.length,
+          itemCount: reverseEpisodeList.length,
           itemBuilder: (context, index) {
-            final anime = episodeList[index];
+            final anime = reverseEpisodeList[index];
 
             return Padding(
               padding: const EdgeInsets.only(right: 15),
-              child: CardEpisodeShowcase(poster, anime.eps!, anime.episodeId),
+              child: CardEpisodeShowcase(
+                poster,
+                anime.title,
+                anime.eps!,
+                anime.episodeId,
+              ),
             );
           },
         ),
@@ -452,10 +456,22 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   // card episodes
-  Widget CardEpisodeShowcase(String poster, int eps, String episodeid) {
+  Widget CardEpisodeShowcase(
+    String poster,
+    String title,
+    int eps,
+    String episodeid,
+  ) {
     return GestureDetector(
       onTap: () {
-        print(episodeid);
+        // print(episodeid);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                VideoPlayerPage(epsId: episodeid, title: title),
+          ),
+        );
       },
       child: Container(
         height: 100,

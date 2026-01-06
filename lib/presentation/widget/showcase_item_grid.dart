@@ -66,19 +66,16 @@ class ShowcaseItemGrid extends StatelessWidget {
                 ),
               ),
 
-              // Gradient gelap di bawah
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    gradient: const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent, // atas tetap terang
-                        Colors.black87, // bawah gelap
-                      ],
-                    ),
+                    gradient: episode == null
+                        ? null
+                        : const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.black87],
+                          ),
                   ),
                 ),
               ),
