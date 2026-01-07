@@ -16,6 +16,7 @@ import 'package:streaming_app/presentation/completed_page.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:streaming_app/presentation/ongoing_page.dart';
+import 'package:streaming_app/presentation/search_page.dart';
 import 'package:streaming_app/presentation/widget/showcase_card.dart';
 import 'package:streaming_app/presentation/widget/showcase_card_without_episode.dart';
 
@@ -149,11 +150,19 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               Row(
-                children: const [
-                  Icon(
-                    FontAwesomeIcons.magnifyingGlass,
-                    size: 20,
-                    color: Colors.white,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => SearchPage()),
+                      );
+                    },
+                    child: Icon(
+                      FontAwesomeIcons.magnifyingGlass,
+                      size: 20,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(width: 10),
                   Icon(FontAwesomeIcons.bell, size: 20, color: Colors.white),
