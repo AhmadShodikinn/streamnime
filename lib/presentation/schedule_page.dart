@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:streaming_app/bloc/schedule/schedule_bloc.dart';
+import 'package:streaming_app/bloc/schedule/schedule_event.dart';
+import 'package:streaming_app/bloc/schedule/schedule_state.dart';
+import 'package:streaming_app/data/models/schedule_anime_model.dart';
+import 'package:streaming_app/data/repository/schedule_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/detail_page.dart';
 
 class ReleasePage extends StatefulWidget {
   const ReleasePage({Key? key}) : super(key: key);
@@ -9,80 +16,107 @@ class ReleasePage extends StatefulWidget {
 }
 
 class _ReleasePageState extends State<ReleasePage> {
-  String selectedDay = "Tuesday";
+  String selectedDayKey = "Tuesday"; // key internal (UI)
 
-  final List<String> days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
+  // Mapping key (English) -> label API (Indonesian)
+  final Map<String, String> dayMapping = {
+    "Monday": "Senin",
+    "Tuesday": "Selasa",
+    "Wednesday": "Rabu",
+    "Thursday": "Kamis",
+    "Friday": "Jumat",
+    "Saturday": "Sabtu",
+    "Sunday": "Minggu",
+  };
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return BlocProvider(
+      create: (_) =>
+          ScheduleBloc(ScheduleAnimeRepository())
+            ..add(FetchScheduleAnimeData()),
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 20),
-          child: Text(
-            "Release Anime",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 60,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: days.map((day) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedDay = day;
-                          });
-                        },
-                        child: CardByDay(
-                          nameOfTheDay: day,
-                          activeDay: selectedDay == day,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: const Padding(
+            padding: EdgeInsets.only(left: 15),
+            child: Text(
+              "Release Anime",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
+        ),
+        body: BlocBuilder<ScheduleBloc, ScheduleState>(
+          builder: (context, state) {
+            if (state is ScheduleLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is ScheduleLoaded) {
+              final scheduleAllDay = state.scheduleData.data;
 
-          Expanded(
-            child: ListView.builder(
-              //perlu dibenerin
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 50),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return const CardRelease();
-              },
-            ),
-          ),
+              final selectedDayLabel = dayMapping[selectedDayKey]!;
 
-          SizedBox(height: 10),
-        ],
+              final selectedDayData = scheduleAllDay.firstWhere(
+                (e) => e.day == selectedDayLabel,
+                orElse: () =>
+                    ScheduleAnimeDay(day: selectedDayLabel, animeList: []),
+              );
+
+              final animeList = selectedDayData.animeList;
+
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 60,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: dayMapping.keys.map((key) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedDayKey = key;
+                                  });
+                                },
+                                child: CardByDay(
+                                  nameOfTheDay: key, // bahasa inggris
+                                  activeDay: selectedDayKey == key,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(15, 15, 15, 50),
+                      itemCount: animeList.length,
+                      itemBuilder: (context, index) {
+                        final anime = animeList[index];
+                        return CardRelease(anime: anime);
+                      },
+                    ),
+                  ),
+                ],
+              );
+            } else if (state is ScheduleError) {
+              return Center(child: Text(state.message));
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -122,7 +156,9 @@ class CardByDay extends StatelessWidget {
 }
 
 class CardRelease extends StatelessWidget {
-  const CardRelease({Key? key}) : super(key: key);
+  final ScheduleAnimeItem anime;
+
+  const CardRelease({Key? key, required this.anime}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -130,20 +166,28 @@ class CardRelease extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Container(
-            height: 100,
-            width: 150,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: const DecorationImage(
-                image: NetworkImage(
-                  "https://otakudesu.best/wp-content/uploads/2026/01/154763.jpg",
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailPage(animeId: anime.slug),
                 ),
-                fit: BoxFit.cover,
+              );
+            },
+            child: Container(
+              height: 100,
+              width: 150,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: NetworkImage(anime.poster),
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            child: const Center(
-              child: Icon(Icons.play_circle, color: Colors.white),
+              child: const Center(
+                child: Icon(Icons.play_circle, color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -153,18 +197,24 @@ class CardRelease extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Toujima Tanzaburou wa Kamen Rider ni Naritai",
+                  anime.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontFamily: "Urbanist",
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailPage(animeId: anime.slug),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.play_circle),
                   label: const Text('Play'),
                   style: ElevatedButton.styleFrom(
