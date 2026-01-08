@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:streaming_app/bloc/search/search_bloc.dart';
+import 'package:streaming_app/bloc/search/search_event.dart';
+import 'package:streaming_app/bloc/search/search_state.dart';
+import 'package:streaming_app/data/models/search_anime_model.dart';
+import 'package:streaming_app/data/repository/search_anime_repository.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
@@ -11,122 +17,157 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final Map<String, String> dummyAnime = {
-    "title":
-        "Kimetsu no Yaiba: Hashira Geiko-hen (Episode 1 – 8) Subtitle Indonesia",
-    "poster":
-        "https://otakudesu.best/wp-content/uploads/2025/03/Kimetsu-no-Yaiba-Season-4-Sub-Indo.jpg",
-    "slug": "kimetsu-yaiba-s4-sub-indo",
-  };
+  final TextEditingController _searchController = TextEditingController();
+
+  // void _onSearchSubmitted(String value) {
+  //   final query = value.trim();
+  //   if (query.isEmpty) return;
+
+  //   context.read<SearchBloc>().add(FetchSearchAnimeData(query));
+  // }
+
+  void _onSearch() {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+
+    context.read<SearchBloc>().add(FetchSearchAnimeData(query));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        // padding: EdgeInsetsGeometry.zero,
-        padding: const EdgeInsets.fromLTRB(15, 50, 15, 15),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                /// 🔍 SEARCH
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search',
-                      prefixIcon: const Icon(
-                        FontAwesomeIcons.magnifyingGlass,
-                        color: AppColors.softGreen,
-                        size: 18,
-                      ),
+    return BlocProvider(
+      create: (_) =>
+          SearchBloc(SearchAnimeRepository())..add(FetchSearchAnimeData("a")),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(15, 50, 15, 15),
+          child: Column(
+            children: [
+              SearchHeader(controller: _searchController, onSearch: _onSearch),
+              Expanded(
+                child: BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    if (state is SearchLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is SearchLoaded) {
+                      final searchAnimeData = state.searchData.data.animeList;
 
-                      filled: true,
-                      fillColor: AppColors.softGreen.withOpacity(0.15),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: Text(
+                              "Top Searches",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
 
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
+                          Expanded(
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: searchAnimeData.length,
+                              itemBuilder: (context, index) {
+                                return CardSearch(
+                                  searchAnimeItem: searchAnimeData[index],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (state is SearchError) {
+                      return Center(child: Text(state.message));
+                    }
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: AppColors.softGreen,
-                          width: 1.5,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: AppColors.softGreen,
-                          width: 1.5,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: const BorderSide(
-                          color: AppColors.softGreen,
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                /// 🎛 FILTER BUTTON
-                GestureDetector(
-                  onTap: () {
-                    // TODO: open filter bottom sheet
+                    return const SizedBox.shrink();
                   },
-                  child: Container(
-                    height: 52,
-                    width: 52,
-                    decoration: BoxDecoration(
-                      color: AppColors.softGreen.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(15),
-                      // border: Border.all(
-                      //   color: AppColors.softGreen,
-                      //   width: 1.5,
-                      // ),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        FontAwesomeIcons.sliders,
-                        color: AppColors.softGreen,
-                        size: 18,
-                      ),
-                    ),
-                  ),
                 ),
-              ],
-            ),
-
-            // Align(
-            //   alignment: AlignmentGeometry.centerLeft,
-            //   child: Text("Top Searches"),
-            // ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return CardSearch(anime: dummyAnime);
-                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class CardSearch extends StatelessWidget {
-  final Map<String, String> anime;
+Widget SearchHeader({
+  required TextEditingController controller,
+  required VoidCallback onSearch,
+}) {
+  return Row(
+    children: [
+      Expanded(
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Search',
+            filled: true,
+            fillColor: AppColors.softGreen.withOpacity(0.15),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(
+                color: AppColors.softGreen,
+                width: 1.5,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(
+                color: AppColors.softGreen,
+                width: 1.5,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(
+                color: AppColors.softGreen,
+                width: 1.5,
+              ),
+            ),
+          ),
+        ),
+      ),
 
-  const CardSearch({Key? key, required this.anime}) : super(key: key);
+      const SizedBox(width: 12),
+
+      GestureDetector(
+        onTap: onSearch,
+        child: Container(
+          height: 52,
+          width: 52,
+          decoration: BoxDecoration(
+            color: AppColors.softGreen.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: const Center(
+            child: Icon(
+              FontAwesomeIcons.magnifyingGlass,
+              color: AppColors.softGreen,
+              size: 18,
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class CardSearch extends StatelessWidget {
+  // final Map<String, String> anime;
+  final SearchAnimeItem searchAnimeItem;
+
+  const CardSearch({Key? key, required this.searchAnimeItem}) : super(key: key);
+  // const CardSearch({Key? key, required this.anime}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -137,12 +178,12 @@ class CardSearch extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (_) => DetailPage(animeId: anime['slug']!),
-              //   ),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DetailPage(animeId: searchAnimeItem.animeId),
+                ),
+              );
             },
             child: Container(
               height: 100,
@@ -150,9 +191,7 @@ class CardSearch extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
-                  image: NetworkImage(
-                    "https://otakudesu.best/wp-content/uploads/2025/03/Kimetsu-no-Yaiba-Season-4-Sub-Indo.jpg",
-                  ),
+                  image: NetworkImage(searchAnimeItem.poster),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -166,7 +205,7 @@ class CardSearch extends StatelessWidget {
 
           Expanded(
             child: Text(
-              anime['title']!,
+              searchAnimeItem.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
