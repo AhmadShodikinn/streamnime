@@ -51,10 +51,7 @@ class ShowcaseCard extends StatelessWidget {
                     gradient: const LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent, // atas tetap terang
-                        Colors.black87, // bawah gelap
-                      ],
+                      colors: [Colors.transparent, Colors.black87],
                     ),
                   ),
                 ),

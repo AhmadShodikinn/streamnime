@@ -18,33 +18,42 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
+  late SearchBloc _searchBloc;
 
-  // void _onSearchSubmitted(String value) {
-  //   final query = value.trim();
-  //   if (query.isEmpty) return;
+  @override
+  void initState() {
+    super.initState();
+    _searchBloc = SearchBloc(SearchAnimeRepository());
+    _searchBloc.add(FetchSearchAnimeData("one"));
+  }
 
-  //   context.read<SearchBloc>().add(FetchSearchAnimeData(query));
-  // }
-
-  void _onSearch() {
-    final query = _searchController.text.trim();
-    if (query.isEmpty) return;
-
-    context.read<SearchBloc>().add(FetchSearchAnimeData(query));
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchBloc.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          SearchBloc(SearchAnimeRepository())..add(FetchSearchAnimeData("a")),
+    return BlocProvider.value(
+      value: _searchBloc,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(15, 50, 15, 15),
+          padding: const EdgeInsets.fromLTRB(15, 50, 15, 0),
           child: Column(
             children: [
-              SearchHeader(controller: _searchController, onSearch: _onSearch),
+              SearchHeader(
+                controller: _searchController,
+                onSearch: () {
+                  final keyword = _searchController.text.trim();
+
+                  if (keyword.isNotEmpty) {
+                    _searchBloc.add(FetchSearchAnimeData(keyword));
+                  }
+                },
+              ),
               Expanded(
                 child: BlocBuilder<SearchBloc, SearchState>(
                   builder: (context, state) {
@@ -57,11 +66,11 @@ class _SearchPageState extends State<SearchPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
                               "Top Searches",
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -105,6 +114,7 @@ Widget SearchHeader({
       Expanded(
         child: TextField(
           controller: controller,
+          onSubmitted: (_) => onSearch(),
           decoration: InputDecoration(
             hintText: 'Search',
             filled: true,
@@ -163,19 +173,20 @@ Widget SearchHeader({
 }
 
 class CardSearch extends StatelessWidget {
-  // final Map<String, String> anime;
   final SearchAnimeItem searchAnimeItem;
 
   const CardSearch({Key? key, required this.searchAnimeItem}) : super(key: key);
-  // const CardSearch({Key? key, required this.anime}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final status = searchAnimeItem.status;
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      // padding: EdgeInsetsGeometry.zero,
+      padding: const EdgeInsets.only(bottom: 15),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // IMAGE LEFT
           GestureDetector(
             onTap: () {
               Navigator.push(
@@ -204,11 +215,57 @@ class CardSearch extends StatelessWidget {
           const SizedBox(width: 12),
 
           Expanded(
-            child: Text(
-              searchAnimeItem.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // TITLE
+                Text(
+                  searchAnimeItem.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                Row(
+                  children: [
+                    Text("Score :", style: const TextStyle(fontSize: 14)),
+                    const SizedBox(width: 10),
+                    Text(
+                      searchAnimeItem.score.isEmpty
+                          ? "none"
+                          : searchAnimeItem.score,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+
+                    // TAG STATUS
+                  ],
+                ),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: status == "Completed"
+                        ? AppColors.softGreen
+                        : Colors.amber,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    status,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
