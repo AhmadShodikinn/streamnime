@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:streaming_app/bloc/complete/complete_bloc.dart';
 import 'package:streaming_app/bloc/complete/complete_event.dart';
 import 'package:streaming_app/bloc/complete/complete_state.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 import 'package:streaming_app/presentation/widget/showcase_item_grid.dart';
 
 class CompletedPage extends StatefulWidget {
@@ -55,7 +56,8 @@ class _CompletedPageState extends State<CompletedPage> {
       body: BlocBuilder<CompleteBloc, CompleteState>(
         builder: (context, state) {
           if (state is CompleteLoading) {
-            return const Center(child: CircularProgressIndicator());
+            // return const Center(child: CircularProgressIndicator());
+            return LoadingIndicator();
           } else if (state is CompleteLoaded) {
             final completeList = state.completeData.data.animeList;
 

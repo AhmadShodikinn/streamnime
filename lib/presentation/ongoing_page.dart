@@ -5,6 +5,7 @@ import 'package:streaming_app/bloc/ongoing/ongoing_event.dart';
 import 'package:streaming_app/bloc/ongoing/ongoing_state.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 
 class OngoingPage extends StatefulWidget {
   const OngoingPage({Key? key}) : super(key: key);
@@ -56,7 +57,8 @@ class _OngoingPageState extends State<OngoingPage> {
       body: BlocBuilder<OngoingBloc, OngoingState>(
         builder: (context, state) {
           if (state is OngoingLoading) {
-            return const Center(child: CircularProgressIndicator());
+            // return const Center(child: CircularProgressIndicator());
+            return LoadingIndicator();
           } else if (state is OngoingLoaded) {
             final ongoingList = state.ongoingData.data.animeList;
 

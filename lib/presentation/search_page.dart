@@ -8,6 +8,7 @@ import 'package:streaming_app/data/repository/search_anime_repository.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -58,7 +59,8 @@ class _SearchPageState extends State<SearchPage> {
                 child: BlocBuilder<SearchBloc, SearchState>(
                   builder: (context, state) {
                     if (state is SearchLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      // return const Center(child: CircularProgressIndicator());
+                      return LoadingIndicator();
                     } else if (state is SearchLoaded) {
                       final searchAnimeData = state.searchData.data.animeList;
 

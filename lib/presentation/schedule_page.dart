@@ -7,6 +7,8 @@ import 'package:streaming_app/data/models/schedule_anime_model.dart';
 import 'package:streaming_app/data/repository/schedule_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
+import 'package:intl/intl.dart';
 
 class ReleasePage extends StatefulWidget {
   const ReleasePage({Key? key}) : super(key: key);
@@ -16,9 +18,8 @@ class ReleasePage extends StatefulWidget {
 }
 
 class _ReleasePageState extends State<ReleasePage> {
-  String selectedDayKey = "Tuesday"; // key internal (UI)
+  String selectedDayKey = DateFormat('EEEE').format(DateTime.now());
 
-  // Mapping key (English) -> label API (Indonesian)
   final Map<String, String> dayMapping = {
     "Monday": "Senin",
     "Tuesday": "Selasa",
@@ -55,7 +56,8 @@ class _ReleasePageState extends State<ReleasePage> {
         body: BlocBuilder<ScheduleBloc, ScheduleState>(
           builder: (context, state) {
             if (state is ScheduleLoading) {
-              return const Center(child: CircularProgressIndicator());
+              // return const Center(child: CircularProgressIndicator());
+              return LoadingIndicator();
             } else if (state is ScheduleLoaded) {
               final scheduleAllDay = state.scheduleData.data;
 
@@ -139,7 +141,7 @@ class CardByDay extends StatelessWidget {
       decoration: BoxDecoration(
         color: activeDay ? AppColors.softGreen : Colors.white,
         border: Border.all(
-          color: activeDay ? AppColors.softGreen : Colors.grey,
+          color: activeDay ? AppColors.softGreen : AppColors.softGreen,
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(15),
@@ -148,7 +150,9 @@ class CardByDay extends StatelessWidget {
         nameOfTheDay,
         style: TextStyle(
           fontSize: 14,
-          color: activeDay ? Colors.white : Colors.grey,
+          fontFamily: "Urbanist",
+          color: activeDay ? Colors.white : AppColors.softGreen,
+          fontWeight: activeDay ? FontWeight.bold : FontWeight.normal,
         ),
       ),
     );

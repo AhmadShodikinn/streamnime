@@ -17,6 +17,7 @@ import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:streaming_app/presentation/ongoing_page.dart';
 import 'package:streaming_app/presentation/search_page.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 import 'package:streaming_app/presentation/widget/showcase_card.dart';
 import 'package:streaming_app/presentation/widget/showcase_card_without_episode.dart';
 
@@ -30,70 +31,77 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: BlocProvider(
-        create: (_) => HomeBloc(HomeAnimeRepository())..add(FetchHomeData()),
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: BlocBuilder<HomeBloc, HomeState>(
-            builder: (context, state) {
-              if (state is HomeLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is HomeLoaded) {
-                final ongoingList = state.homeData.data.ongoing.animeList;
-                final completedList = state.homeData.data.completed.animeList;
+    return BlocProvider(
+      create: (_) => HomeBloc(HomeAnimeRepository())..add(FetchHomeData()),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(0.0), // Set the height to zero
+        //   child: AppBar(
+        //     backgroundColor: Colors.green.shade50,
+        //     // You can still use AppBar properties here if needed,
+        //     // but the bar itself will not be visible due to the zero height.
+        //     // title: const Text('Hidden App Bar'),
+        //   ),
+        // ),
+        body: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            if (state is HomeLoading) {
+              // return Center(child: CircularProgressIndicator());
+              return LoadingIndicator();
+            } else if (state is HomeLoaded) {
+              final ongoingList = state.homeData.data.ongoing.animeList;
+              final completedList = state.homeData.data.completed.animeList;
 
-                return ListView(
-                  children: [
-                    MainHeader(),
-                    ContentSection("Ongoing Anime", () {
-                      Navigator.push(
-                        context,
-                        // MaterialPageRoute(builder: (context) => OngoingPage()),
-                        MaterialPageRoute(
-                          builder: (_) => BlocProvider(
-                            create: (_) =>
-                                OngoingBloc(OngoingAnimeRepository())
-                                  ..add(FetchOngoingAnimeData(1)),
-                            child: const OngoingPage(),
-                          ),
-                        ),
-                      );
-                    }),
-                    ongoingShowcaseList(
+              return ListView(
+                children: [
+                  MainHeader(),
+                  ContentSection("Ongoing Anime", () {
+                    Navigator.push(
                       context,
-                      ongoingList,
-                    ), // Tampilkan list ongoing
-
-                    ContentSection("Completed Anime", () {
-                      Navigator.push(
-                        context,
-                        // MaterialPageRoute(
-                        //   builder: (context) => CompletedPage(),
-                        // ),
-                        MaterialPageRoute(
-                          builder: (_) => BlocProvider(
-                            create: (_) =>
-                                CompleteBloc(CompleteAnimeRepository())
-                                  ..add(FetchCompleteAnimeData(1)),
-                            child: const CompletedPage(),
-                          ),
+                      // MaterialPageRoute(builder: (context) => OngoingPage()),
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) =>
+                              OngoingBloc(OngoingAnimeRepository())
+                                ..add(FetchOngoingAnimeData(1)),
+                          child: const OngoingPage(),
                         ),
-                      );
-                    }),
-                    completedShowcaseList(context, completedList),
+                      ),
+                    );
+                  }),
+                  ongoingShowcaseList(
+                    context,
+                    ongoingList,
+                  ), // Tampilkan list ongoing
 
-                    SizedBox(height: 10),
-                  ],
-                );
-              } else if (state is HomeError) {
-                return Center(child: Text(state.message));
-              }
+                  ContentSection("Completed Anime", () {
+                    Navigator.push(
+                      context,
+                      // MaterialPageRoute(
+                      //   builder: (context) => CompletedPage(),
+                      // ),
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) =>
+                              CompleteBloc(CompleteAnimeRepository())
+                                ..add(FetchCompleteAnimeData(1)),
+                          child: const CompletedPage(),
+                        ),
+                      ),
+                    );
+                  }),
+                  completedShowcaseList(context, completedList),
 
-              return const SizedBox.shrink();
-            },
-          ),
+                  SizedBox(height: 10),
+                ],
+              );
+            } else if (state is HomeError) {
+              return Center(child: Text(state.message));
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );

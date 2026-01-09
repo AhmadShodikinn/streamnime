@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:streaming_app/bloc/watch/watch_bloc.dart';
@@ -76,7 +77,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             body: BlocBuilder<WatchBloc, WatchState>(
               builder: (context, state) {
                 if (state is WatchLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  // return const Center(child: CircularProgressIndicator());
+                  return LoadingIndicator();
                 }
 
                 if (state is WatchError) {
@@ -110,13 +112,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                         ],
                       ),
 
-                      if (isServerLoading)
-                        const Positioned.fill(
-                          child: ColoredBox(
-                            color: Colors.white,
-                            child: Center(child: CircularProgressIndicator()),
-                          ),
-                        ),
+                      if (isServerLoading) LoadingIndicator(),
+                      // const Positioned.fill(
+                      //   child: ColoredBox(
+                      //     color: Colors.white,
+                      //     child: Center(child: CircularProgressIndicator()),
+                      //   ),
+                      // ),
                     ],
                   );
                 }

@@ -13,6 +13,7 @@ import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/helper/get_season_anime.dart';
 import 'package:streaming_app/presentation/preferences_page.dart';
 import 'package:streaming_app/presentation/video_player_page.dart';
+import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 
 class DetailPage extends StatefulWidget {
   final String animeId;
@@ -25,52 +26,58 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // body: ShowcaseHeaderDetail(),
-      backgroundColor: Colors.white,
-      body: BlocProvider(
-        create: (_) =>
-            DetailBloc(DetailAnimeRepository())
-              ..add(FetchDetailAnimeData(widget.animeId)),
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: BlocBuilder<DetailBloc, DetailState>(
-            builder: (context, state) {
-              if (state is DetailLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is DetailLoaded) {
-                final detailList = state.detailAnimeModel.data;
-                final poster = state.detailAnimeModel.data.poster;
-                final recomendedList =
-                    state.detailAnimeModel.data.recommendedAnimeList;
-                final episodeList = state.detailAnimeModel.data.episodeList;
-                // final season = if (state.detailAnimeModel.data.title)
+    return BlocProvider(
+      create: (_) =>
+          DetailBloc(DetailAnimeRepository())
+            ..add(FetchDetailAnimeData(widget.animeId)),
+      child: Scaffold(
+        // appBar: PreferredSize(
+        //   preferredSize: const Size.fromHeight(0.0), // Set the height to zero
+        //   child: AppBar(
+        //     backgroundColor: Colors.green.shade50,
+        //     // You can still use AppBar properties here if needed,
+        //     // but the bar itself will not be visible due to the zero height.
+        //     // title: const Text('Hidden App Bar'),
+        //   ),
+        // ),
+        backgroundColor: Colors.white,
+        body: BlocBuilder<DetailBloc, DetailState>(
+          builder: (context, state) {
+            if (state is DetailLoading) {
+              // return const Center(child: CircularProgressIndicator());
+              return LoadingIndicator();
+            } else if (state is DetailLoaded) {
+              final detailList = state.detailAnimeModel.data;
+              final poster = state.detailAnimeModel.data.poster;
+              final recomendedList =
+                  state.detailAnimeModel.data.recommendedAnimeList;
+              final episodeList = state.detailAnimeModel.data.episodeList;
+              // final season = if (state.detailAnimeModel.data.title)
 
-                final title = state.detailAnimeModel.data.title;
-                final seasonInfo = getAnimeSeason(title);
+              final title = state.detailAnimeModel.data.title;
+              final seasonInfo = getAnimeSeason(title);
 
-                return Padding(
-                  padding: EdgeInsetsGeometry.zero,
-                  child: ListView(
-                    children: [
-                      ShowcaseHeaderDetail(poster),
-                      ShowcaseInformationDetail(detailList),
-                      ShowcaseInformationEpisodes(
-                        poster,
-                        episodeList,
-                        seasonInfo,
-                      ),
-                      PreferencesPage(recommendedAnimeList: recomendedList),
-                    ],
-                  ),
-                );
-              } else if (state is DetailError) {
-                return Center(child: Text(state.message));
-              }
+              return Padding(
+                padding: EdgeInsetsGeometry.zero,
+                child: ListView(
+                  children: [
+                    ShowcaseHeaderDetail(poster),
+                    ShowcaseInformationDetail(detailList),
+                    ShowcaseInformationEpisodes(
+                      poster,
+                      episodeList,
+                      seasonInfo,
+                    ),
+                    PreferencesPage(recommendedAnimeList: recomendedList),
+                  ],
+                ),
+              );
+            } else if (state is DetailError) {
+              return Center(child: Text(state.message));
+            }
 
-              return const SizedBox.shrink();
-            },
-          ),
+            return const SizedBox.shrink();
+          },
         ),
       ),
 
