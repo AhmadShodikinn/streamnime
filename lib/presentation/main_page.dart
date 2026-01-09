@@ -82,10 +82,7 @@ class _MainPageState extends State<MainPage> {
                         ),
                       );
                     }),
-                    completedShowcaseList(
-                      context,
-                      completedList,
-                    ), // Tampilkan list completed
+                    completedShowcaseList(context, completedList),
 
                     SizedBox(height: 10),
                   ],
@@ -213,7 +210,7 @@ class _MainPageState extends State<MainPage> {
                       backgroundColor: AppColors.softGreen,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
+                        horizontal: 20,
                         vertical: 10,
                       ),
                     ),

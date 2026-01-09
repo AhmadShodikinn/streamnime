@@ -188,24 +188,19 @@ class _OngoingPageState extends State<OngoingPage> {
                     ),
                   ),
                   Text(
-                    "Terakhir update: $lastReleaseDate",
+                    "Last release date: $lastReleaseDate",
                     style: TextStyle(fontSize: 16, fontFamily: "Urbanist"),
                   ),
-                  // Flexible(
-                  //   child: Text(
-                  //     "Genre: Action, Fiction, Dark Fantasy, Apocalyptic, Drama, Shounen, ...",
-                  //     style: TextStyle(fontSize: 14, fontFamily: "Urbanist"),
-                  //     maxLines: 2,
-                  //     overflow: TextOverflow.ellipsis,
-                  //   ),
-                  // ),
+                  Text(
+                    "Release day: $releaseDay",
+                    style: TextStyle(fontSize: 16, fontFamily: "Urbanist"),
+                  ),
+
                   SizedBox(height: 15),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Your button logic here
-                        // print('Button pressed!');
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -219,7 +214,7 @@ class _OngoingPageState extends State<OngoingPage> {
                         backgroundColor: AppColors.softGreen,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
+                          horizontal: 20,
                           vertical: 10,
                         ),
                       ),

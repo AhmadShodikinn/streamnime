@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -102,26 +104,73 @@ class _DetailPageState extends State<DetailPage> {
       decoration: BoxDecoration(
         image: DecorationImage(image: NetworkImage(poster), fit: BoxFit.cover),
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 20,
-            left: 15,
-            // child: Icon(Icons.arrow_back, color: Colors.white),
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Icon(Icons.arrow_back, color: Colors.white),
+      child: ClipRRect(
+        // make sure we apply clip it properly
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            alignment: Alignment.center,
+            color: Colors.grey.withOpacity(0.1),
+            child: Stack(
+              children: [
+                Positioned(
+                  child: Center(
+                    child: Container(
+                      height: 250,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(poster),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 5,
+                  left: 15,
+                  // child: Icon(Icons.arrow_back, color: Colors.white),
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(Icons.arrow_back, color: Colors.white),
+                  ),
+                ),
+                Positioned(
+                  top: 5,
+                  right: 15,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.cast),
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
-          Positioned(
-            top: 20,
-            right: 15,
-            child: Icon(Icons.cast_sharp, color: Colors.white),
-          ),
-        ],
+        ),
       ),
+      // child: Stack(
+      //   children: [
+      //     Positioned(
+      //       top: 20,
+      //       left: 15,
+      //       // child: Icon(Icons.arrow_back, color: Colors.white),
+      //       child: IconButton(
+      //         onPressed: () {
+      //           Navigator.of(context).pop();
+      //         },
+      //         icon: Icon(Icons.arrow_back, color: Colors.white),
+      //       ),
+      //     ),
+      //     Positioned(
+      //       top: 20,
+      //       right: 15,
+      //       child: Icon(Icons.cast_sharp, color: Colors.white),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
@@ -287,6 +336,7 @@ class _DetailPageState extends State<DetailPage> {
                         MaterialPageRoute(
                           builder: (context) => VideoPlayerPage(
                             epsId: animeList.episodeList.last.episodeId,
+                            poster: animeList.poster,
                             title: animeList.episodeList.last.title,
                           ),
                         ),
@@ -469,7 +519,7 @@ class _DetailPageState extends State<DetailPage> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                VideoPlayerPage(epsId: episodeid, title: title),
+                VideoPlayerPage(epsId: episodeid, poster: poster, title: title),
           ),
         );
       },

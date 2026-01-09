@@ -12,8 +12,14 @@ import 'package:streaming_app/presentation/constant/app_colors.dart';
 class VideoPlayerPage extends StatefulWidget {
   final String epsId;
   final String title;
+  final String poster;
 
-  const VideoPlayerPage({super.key, required this.epsId, required this.title});
+  const VideoPlayerPage({
+    super.key,
+    required this.epsId,
+    required this.poster,
+    required this.title,
+  });
 
   @override
   State<VideoPlayerPage> createState() => _VideoPlayerPageState();
@@ -34,13 +40,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     _webViewController.loadRequest(Uri.parse(url));
   }
 
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
+  // void _launchURL(String url) async {
+  //   if (await canLaunch(url)) {
+  //     await launch(url);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +102,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                           _divider("Server selection"),
                           _serverSelection(data.data.server.qualities, context),
                           _divider("Download list"),
-                          _downloadSection(data.data.downloadUrl.qualities),
+                          _downloadSection(
+                            data.data.title,
+                            widget.poster,
+                            data.data.downloadUrl.qualities,
+                          ),
                         ],
                       ),
 
@@ -109,17 +119,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                         ),
                     ],
                   );
-
-                  // return ListView(
-                  //   children: [
-                  //     _videoPlayer(),
-                  //     _episodeInfo(data.data),
-                  //     _divider("Server selection"),
-                  //     _serverSelection(data.data.server.qualities, context),
-                  //     _divider("Download list"),
-                  //     _downloadSection(data.data.downloadUrl.qualities),
-                  //   ],
-                  // );
                 }
 
                 return const SizedBox.shrink();
@@ -169,20 +168,35 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                             MaterialPageRoute(
                               builder: (context) => VideoPlayerPage(
                                 epsId: animeData.prevEpisode!.episodeId,
+                                poster: widget.poster,
                                 title: animeData.prevEpisode!.title,
                               ),
                             ),
                           );
                         }
                       : null,
-                  icon: const Icon(Icons.keyboard_arrow_left),
+                  // icon: const Icon(Icons.keyboard_arrow_left),
                   label: const Text("Prev"),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: animeData.hasPrevEpisode
+                        ? Colors.white
+                        : Colors.grey,
+                    foregroundColor: animeData.hasPrevEpisode
                         ? Colors.green
                         : Colors.grey,
-                    foregroundColor: Colors.white,
+                    side: BorderSide(
+                      width: 2,
+                      color: animeData.hasPrevEpisode
+                          ? AppColors.softGreen
+                          : Colors.grey,
+                    ),
                   ),
+                  // style: OutlinedButton.styleFrom(
+                  //   backgroundColor: animeData.hasPrevEpisode
+                  //       ? Colors.green
+                  //       : Colors.grey,
+                  //   foregroundColor: Colors.white,
+                  // ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -196,22 +210,29 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                             MaterialPageRoute(
                               builder: (context) => VideoPlayerPage(
                                 epsId: animeData.nextEpisode!.episodeId,
+                                poster: widget.poster,
                                 title: animeData.nextEpisode!.title,
                               ),
                             ),
                           );
                         }
                       : null,
-                  icon: const Icon(Icons.keyboard_arrow_right),
+                  // icon: const Icon(Icons.keyboard_arrow_right),
+                  // iconAlignment: IconAlignment.end,
                   label: const Text("Next"),
                   style: OutlinedButton.styleFrom(
                     backgroundColor: animeData.hasNextEpisode
-                        ? Colors.white
+                        ? AppColors.softGreen
                         : Colors.grey,
                     foregroundColor: animeData.hasNextEpisode
-                        ? Colors.green
+                        ? Colors.white
                         : Colors.grey,
-                    side: BorderSide(width: 2, color: AppColors.softGreen),
+                    side: BorderSide(
+                      width: 2,
+                      color: animeData.hasNextEpisode
+                          ? AppColors.softGreen
+                          : Colors.grey,
+                    ),
                   ),
                 ),
               ),
@@ -269,31 +290,39 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               const SizedBox(height: 6),
 
               hasServers
-                  ? Row(
-                      spacing: 8,
-                      children: quality.serverList.map((url) {
-                        return InkWell(
-                          onTap: () {
-                            context.read<WatchBloc>().add(
-                              ChangeStreamingServer(url.serverId),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: AppColors.softGreen.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              url.title,
-                              style: const TextStyle(
-                                color: AppColors.softGreen,
-                                fontWeight: FontWeight.bold,
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          spacing: 8,
+                          children: quality.serverList.map((url) {
+                            return InkWell(
+                              onTap: () {
+                                context.read<WatchBloc>().add(
+                                  ChangeStreamingServer(url.serverId),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.softGreen.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  url.title,
+                                  style: const TextStyle(
+                                    color: AppColors.softGreen,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     )
                   : const Text(
                       "Tidak tersedia",
@@ -311,7 +340,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 
-  Widget _downloadSection(List<DownloadQuality> qualities) {
+  Widget _downloadSection(
+    String title,
+    String poster,
+    List<DownloadQuality> qualities,
+  ) {
     return Column(
       children: qualities.map((quality) {
         final hasUrls = quality.urls.isNotEmpty;
@@ -351,6 +384,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                                   builder: (_) {
                                     return _bottomSheetContent(
                                       context,
+                                      title,
+                                      poster,
                                       quality,
                                       url,
                                     );
@@ -395,136 +430,177 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   Widget _bottomSheetContent(
     BuildContext context,
+    String title,
+    String poster,
     DownloadQuality quality,
     DownloadItem url,
   ) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // handle
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-
-            const Text(
-              "Download episode?",
-              style: TextStyle(
-                fontSize: 20,
-                fontFamily: "Urbanist",
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            Divider(thickness: 0.4, color: Colors.grey),
-
-            const SizedBox(height: 8),
-            const Text(
-              "Kamu akan diarahkan ke browser untuk mengunduh video ini.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontFamily: "Urbanist",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // handle
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    "https://otakudesu.best/wp-content/uploads/2025/03/Kimetsu-no-Yaiba-Season-4-Sub-Indo.jpg",
-                    width: 90,
-                    height: 120,
-                    fit: BoxFit.cover,
-                  ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Urbanist",
-                          fontSize: 18,
-                        ),
+              ),
+
+              const Text(
+                "Download episode?",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "Urbanist",
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Divider(thickness: 0.4, color: Colors.grey),
+
+              const SizedBox(height: 8),
+
+              // const Text(
+              //   "You will be redirected to a browser to download this video.",
+              //   // textAlign: TextAlign.center,
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     fontFamily: "Urbanist",
+              //     // fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Info: ",
+                      style: TextStyle(
+                        color: AppColors.softGreen,
+                        fontSize: 14,
+                        fontFamily: "Urbanist",
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Quality: ${quality.title}",
-                        style: TextStyle(
-                          fontFamily: "Urbanist",
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
+                    ),
+                    const TextSpan(
+                      text:
+                          "You will be redirected to a browser to download this video.",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontFamily: "Urbanist",
                       ),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.softGreen.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          quality.size,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      poster,
+                      width: 90,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            color: AppColors.softGreen,
                             fontWeight: FontWeight.bold,
+                            fontFamily: "Urbanist",
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "Quality: ${quality.title}",
+                          style: TextStyle(
+                            fontFamily: "Urbanist",
+                            color: Colors.grey,
                             fontSize: 16,
                           ),
                         ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.softGreen.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            quality.size,
+                            style: const TextStyle(
+                              color: AppColors.softGreen,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              Divider(thickness: 0.4, color: Colors.grey),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
                       ),
-                    ],
+                      child: const Text("Cancel"),
+                    ),
                   ),
-                ),
-              ],
-            ),
-
-            Divider(thickness: 0.4, color: Colors.grey),
-            SizedBox(height: 20),
-
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        await launchUrl(Uri.parse(url.url));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.softGreen,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text("Download"),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await launchUrl(Uri.parse(url.url));
-                    },
-                    child: const Text("Download"),
-                  ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
