@@ -69,13 +69,12 @@ class ShowcaseItemGrid extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: episode == null
-                        ? null
-                        : const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black87],
-                          ),
+                    borderRadius: BorderRadius.circular(8),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.transparent, Colors.black87],
+                    ),
                   ),
                 ),
               ),
@@ -96,7 +95,8 @@ class ShowcaseItemGrid extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  rating,
+                  // rating,
+                  rating.isNotEmpty ? rating : "none",
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

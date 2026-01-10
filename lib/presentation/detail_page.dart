@@ -8,12 +8,16 @@ import 'package:streaming_app/bloc/detail/detail_bloc.dart';
 import 'package:streaming_app/bloc/detail/detail_event.dart';
 import 'package:streaming_app/bloc/detail/detail_state.dart';
 import 'package:streaming_app/data/models/detail_anime_model.dart';
+import 'package:streaming_app/data/models/saved_anime_model.dart';
 import 'package:streaming_app/data/repository/detail_anime_repository.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/helper/get_season_anime.dart';
 import 'package:streaming_app/presentation/preferences_page.dart';
 import 'package:streaming_app/presentation/video_player_page.dart';
 import 'package:streaming_app/presentation/widget/loading_indicator.dart';
+
+//sqlite
+import 'package:streaming_app/data/database/anime_database.dart';
 
 class DetailPage extends StatefulWidget {
   final String animeId;
@@ -24,6 +28,47 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  bool isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBookmark();
+  }
+
+  Future<void> _checkBookmark() async {
+    final result = await AnimeDatabase.instance.isSaved(widget.animeId);
+
+    setState(() {
+      isBookmarked = result;
+    });
+  }
+
+  Future<void> _toggleBookmark(DetailAnimeData anime) async {
+    final db = AnimeDatabase.instance;
+
+    if (isBookmarked) {
+      await db.removeSavedAnime(widget.animeId);
+    } else {
+      await db.saveAnime(
+        SavedAnimeModel(
+          animeId: widget.animeId,
+          title: anime.title,
+          poster: anime.poster,
+          episodes: anime.episodes,
+          score: anime.score,
+          lastReleaseDate: "Mei 12, 2024",
+          href: "/anime",
+          otakudesuUrl: "https://otakudesu.best",
+        ),
+      );
+    }
+
+    setState(() {
+      isBookmarked = !isBookmarked;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -218,8 +263,20 @@ class _DetailPageState extends State<DetailPage> {
                       Baseline(
                         baseline: 24,
                         baselineType: TextBaseline.alphabetic,
-                        child: Icon(FontAwesomeIcons.bookmark, size: 18),
+                        child: IconButton(
+                          onPressed: () => _toggleBookmark(animeList),
+                          icon: Icon(
+                            isBookmarked
+                                ? FontAwesomeIcons.solidBookmark
+                                : FontAwesomeIcons.bookmark,
+                            size: 18,
+                            color: isBookmarked
+                                ? AppColors.softGreen
+                                : Colors.black,
+                          ),
+                        ),
                       ),
+
                       const SizedBox(width: 20),
                       Baseline(
                         baseline: 24,

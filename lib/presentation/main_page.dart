@@ -117,9 +117,7 @@ class _MainPageState extends State<MainPage> {
               width: double.infinity,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(
-                    'assets/images/background-header.jpg',
-                  ), // atau .png
+                  image: AssetImage('assets/images/background-header.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -145,16 +143,42 @@ class _MainPageState extends State<MainPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Animplex",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontFamily: "Urbanist",
-                  fontWeight: FontWeight.bold,
+              // Row(
+              //   spacing: 5,
+              //   children: [
+              //     Container(
+              //       height: 26,
+              //       width: 26,
+              //       decoration: const BoxDecoration(
+              //         image: DecorationImage(
+              //           image: AssetImage('assets/images/Animplex.png'),
+              //           fit: BoxFit.contain,
+              //         ),
+              //       ),
+              //     ),
+              //     Text(
+              //       "Animplex",
+              //       style: TextStyle(
+              //         color: Colors.white,
+              //         fontSize: 26,
+              //         fontFamily: "Urbanist",
+              //         fontWeight: FontWeight.bold,
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              Container(
+                height: 30,
+                width: 30,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/Animplex.png'),
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               Row(
+                spacing: 10,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -169,7 +193,6 @@ class _MainPageState extends State<MainPage> {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: 10),
                   Icon(FontAwesomeIcons.bell, size: 20, color: Colors.white),
                 ],
               ),

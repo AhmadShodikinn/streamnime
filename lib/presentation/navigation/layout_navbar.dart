@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/main_page.dart';
+import 'package:streaming_app/presentation/my_list_page.dart';
 import 'package:streaming_app/presentation/schedule_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -15,7 +16,7 @@ class _LayoutNavbarState extends State<LayoutNavbar> {
   final List<Widget> _pages = [
     MainPage(),
     ReleasePage(),
-    Center(child: Text('Halaman Menu 3')),
+    MyListPage(),
     Center(child: Text('Halaman Menu 4')),
     Center(child: Text('Halaman Menu 5')),
   ];

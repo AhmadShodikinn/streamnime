@@ -49,7 +49,7 @@ class _OngoingPageState extends State<OngoingPage> {
           style: TextStyle(
             color: Colors.black,
             fontFamily: "Urbanist",
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: FontWeight.w700,
           ),
         ),
