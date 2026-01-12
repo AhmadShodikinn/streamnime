@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
+import 'package:streaming_app/presentation/download_page.dart';
 import 'package:streaming_app/presentation/main_page.dart';
 import 'package:streaming_app/presentation/my_list_page.dart';
+import 'package:streaming_app/presentation/profile_page.dart';
 import 'package:streaming_app/presentation/schedule_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -17,8 +19,8 @@ class _LayoutNavbarState extends State<LayoutNavbar> {
     MainPage(),
     ReleasePage(),
     MyListPage(),
-    Center(child: Text('Halaman Menu 4')),
-    Center(child: Text('Halaman Menu 5')),
+    DownloadPage(),
+    ProfilePage(),
   ];
 
   @override

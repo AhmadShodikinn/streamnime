@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/data/database/anime_database.dart';
 import 'package:streaming_app/data/models/saved_anime_model.dart';
+import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/search_page.dart';
 import 'package:streaming_app/presentation/widget/showcase_item_grid.dart';
 
@@ -102,9 +103,24 @@ class _MyListPageState extends State<MyListPage> {
             ? const Center(child: CircularProgressIndicator())
             : _animeList.isEmpty
             ? const Center(
-                child: Text(
-                  "My List masih kosong",
-                  style: TextStyle(fontSize: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Your List is Empty",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Urbanist",
+                        color: AppColors.softGreen,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "It seems that you haven't added any  \n  anime to the list",
+                      style: TextStyle(fontSize: 18, fontFamily: "Urbanist"),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               )
             : ShowcaseItemGrid(_animeList, _scrollController),
