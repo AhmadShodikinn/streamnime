@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:streaming_app/presentation/constant/app_colors.dart';
 
@@ -19,7 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
         title: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          titleSpacing: 0, // biar rapi ke kiri
+          titleSpacing: 0,
           title: Row(
             children: [
               Image.asset(
@@ -52,14 +53,27 @@ class _ProfilePageState extends State<ProfilePage> {
         actionsPadding: EdgeInsets.only(right: 5),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(children: [ProfileCard(), PremiumTag()]),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          children: [
+            ProfileCard(),
+            Divider(),
+            PremiumTag(),
+            Divider(),
+            Expanded(child: ListMenu()),
+          ],
+        ),
       ),
     );
   }
 
+  Widget Divider() {
+    return SizedBox(height: 20);
+  }
+
   Widget ProfileCard() {
     return Row(
+      spacing: 15,
       children: [
         Stack(
           children: [
@@ -80,15 +94,24 @@ class _ProfilePageState extends State<ProfilePage> {
               bottom: 0.0,
               right: 0.0,
               child: Container(
-                color: AppColors.softGreen,
-                height: 50,
-                width: 50,
-                child: Icon(FontAwesomeIcons.pen, size: 20),
+                height: 25,
+                width: 25,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(6)),
+
+                  color: AppColors.softGreen,
+                ),
+                child: Icon(
+                  FontAwesomeIcons.pen,
+                  size: 12,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
         ),
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Kuchiba Chisa",
@@ -102,8 +125,8 @@ class _ProfilePageState extends State<ProfilePage> {
               "Kuchibachisa@example.co.id",
               style: TextStyle(
                 fontFamily: "Urbanist",
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.grey,
               ),
             ),
           ],
@@ -118,43 +141,174 @@ class _ProfilePageState extends State<ProfilePage> {
       height: 100,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.softGreen, width: 1),
+        border: Border.all(color: AppColors.softGreen, width: 1.5),
       ),
+      child: Padding(
+        padding: EdgeInsetsGeometry.all(15),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 15,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(FontAwesomeIcons.crown, size: 40, color: AppColors.softGreen),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 5,
+                children: [
+                  Text(
+                    "Join Premium!",
+                    style: TextStyle(
+                      fontFamily: "Urbanist",
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.softGreen,
+                    ),
+                  ),
+                  Text(
+                    "Enjoy watching Full-HD animes, without restrictions and without ads",
+                    maxLines: 2,
+
+                    style: TextStyle(
+                      fontFamily: "Urbanist",
+                      fontSize: 15,
+                      color: Colors.grey,
+                      height: 1.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              FontAwesomeIcons.angleRight,
+              size: 20,
+              color: AppColors.softGreen,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget ListTileMenu(
+    IconData fontAwesomeicon,
+    String title,
+    bool isToggle,
+    bool isLanguage,
+    bool isExit,
+  ) {
+    return Padding(
+      padding: EdgeInsetsGeometry.symmetric(horizontal: 5, vertical: 10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(FontAwesomeIcons.crown, size: 50, color: AppColors.softGreen),
-          Column(
+          Row(
+            spacing: 15,
             children: [
-              Text(
-                "Join Premium!",
-                style: TextStyle(
-                  fontFamily: "Urbanist",
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+              Icon(
+                fontAwesomeicon,
+                size: 20,
+                color: isExit ? AppColors.softRed : AppColors.softBlack,
               ),
               Text(
-                "Enjoy watching Full-HD animes, without restrictions and without ads",
-                maxLines: 2,
+                // "Edit Profile",
+                title,
                 style: TextStyle(
                   fontFamily: "Urbanist",
-                  fontSize: 22,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  color: isExit ? AppColors.softRed : AppColors.softBlack,
                 ),
               ),
             ],
           ),
-          Icon(
-            FontAwesomeIcons.angleRight,
-            size: 30,
-            color: AppColors.softGreen,
+          Row(
+            spacing: 15,
+            children: [
+              if (isLanguage)
+                Text(
+                  "English (US)",
+                  style: TextStyle(
+                    fontFamily: "Urbanist",
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              if (!isExit)
+                isToggle
+                    ? CupertinoSwitch(
+                        value: false,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                      )
+                    : Icon(FontAwesomeIcons.angleRight, size: 20),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget ListTileMenu() {
-    return Row();
+  Widget ListMenu() {
+    return ListView(
+      padding: EdgeInsetsGeometry.only(bottom: 15),
+
+      physics: BouncingScrollPhysics(),
+      children: [
+        ListTileMenu(
+          FontAwesomeIcons.user,
+          "Edit Profile",
+          false,
+          false,
+          false,
+        ),
+        ListTileMenu(
+          FontAwesomeIcons.bell,
+          "Notification",
+          false,
+          false,
+          false,
+        ),
+        ListTileMenu(
+          FontAwesomeIcons.download,
+          "Download",
+          false,
+          false,
+          false,
+        ),
+        ListTileMenu(FontAwesomeIcons.shield, "Security", false, false, false),
+        ListTileMenu(
+          FontAwesomeIcons.earthAmericas,
+          "Language",
+          false,
+          true,
+          false,
+        ),
+        ListTileMenu(FontAwesomeIcons.eye, "Dark Mode", true, false, false),
+        ListTileMenu(
+          FontAwesomeIcons.circleInfo,
+          "Help Center",
+          false,
+          false,
+          false,
+        ),
+        ListTileMenu(
+          FontAwesomeIcons.circleInfo,
+          "Privacy Policy",
+          false,
+          false,
+          false,
+        ),
+        ListTileMenu(
+          FontAwesomeIcons.rightFromBracket,
+          "Logout",
+          false,
+          false,
+          true,
+        ),
+      ],
+    );
   }
 }

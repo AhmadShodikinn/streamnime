@@ -39,7 +39,7 @@ class ShowcaseCardWithoutEpisode extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
+                    begin: Alignment.center,
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent, // atas tetap terang

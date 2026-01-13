@@ -528,7 +528,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       children: [
                         Text(
                           title,
-                          maxLines: 3,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,

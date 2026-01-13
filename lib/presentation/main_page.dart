@@ -17,6 +17,7 @@ import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/detail_page.dart';
 import 'package:streaming_app/presentation/ongoing_page.dart';
 import 'package:streaming_app/presentation/search_page.dart';
+import 'package:streaming_app/presentation/video_player_page.dart';
 import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 import 'package:streaming_app/presentation/widget/showcase_card.dart';
 import 'package:streaming_app/presentation/widget/showcase_card_without_episode.dart';
@@ -178,7 +179,7 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               Row(
-                spacing: 10,
+                spacing: 15,
                 children: [
                   GestureDetector(
                     onTap: () {
@@ -208,7 +209,7 @@ class _MainPageState extends State<MainPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "Demon Slayer: Kimetsu ...",
+                "Kimetsu no Yaiba: Katanakaji ...",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -217,8 +218,9 @@ class _MainPageState extends State<MainPage> {
                 ),
                 textAlign: TextAlign.left,
               ),
+
               Text(
-                "Action, Shounen, Martial Arts",
+                "Action, Fantasy, Historical, Shounen",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -227,13 +229,24 @@ class _MainPageState extends State<MainPage> {
                 ),
                 textAlign: TextAlign.left,
               ),
+
+              SizedBox(height: 10),
               Row(
                 spacing: 10,
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Your button logic here
-                      print('Button pressed!');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VideoPlayerPage(
+                            epsId: "kny-ksh-episode-1-sub-indo",
+                            poster:
+                                "https://otakudesu.best/wp-content/uploads/2023/05/Kimetsu-no-Yaiba-Katanakaji-no-Sato-hen-Sub-Indo.jpg",
+                            title: "Kimetsu no Yaiba Season 3",
+                          ),
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.play_circle),
                     label: const Text('Play'),
@@ -248,10 +261,16 @@ class _MainPageState extends State<MainPage> {
                   ),
                   OutlinedButton.icon(
                     onPressed: () {
-                      print("Button pressed!");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              DetailPage(animeId: "kimetsu-yaiba-s3-sub-indo"),
+                        ),
+                      );
                     },
-                    icon: const Icon(Icons.add),
-                    label: const Text('My List'),
+                    icon: const Icon(FontAwesomeIcons.bars),
+                    label: const Text('More information'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: BorderSide(width: 2, color: Colors.white),

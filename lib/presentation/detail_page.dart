@@ -50,12 +50,14 @@ class _DetailPageState extends State<DetailPage> {
     if (isBookmarked) {
       await db.removeSavedAnime(widget.animeId);
     } else {
+      print("toggle eps: ${anime.episodes}");
+
       await db.saveAnime(
         SavedAnimeModel(
           animeId: widget.animeId,
           title: anime.title,
           poster: anime.poster,
-          episodes: anime.episodes,
+          episodes: anime.episodeList.length,
           score: anime.score,
           lastReleaseDate: "Mei 12, 2024",
           href: "/anime",
@@ -101,7 +103,9 @@ class _DetailPageState extends State<DetailPage> {
 
               final title = state.detailAnimeModel.data.title;
               final seasonInfo = getAnimeSeason(title);
+              final episode = state.detailAnimeModel.data.episodes;
 
+              print("state epsList: ${episodeList.toString()}");
               return Padding(
                 padding: EdgeInsetsGeometry.zero,
                 child: ListView(
@@ -239,10 +243,10 @@ class _DetailPageState extends State<DetailPage> {
       child: Padding(
         padding: EdgeInsetsGeometry.all(15),
         child: Column(
-          spacing: 10,
+          spacing: 15,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
@@ -250,39 +254,94 @@ class _DetailPageState extends State<DetailPage> {
                     animeList.title,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 26,
+                      fontSize: 22,
                       fontWeight: FontWeight.w700,
                       fontFamily: "Urbanist",
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
                   child: Row(
+                    spacing: 20,
                     children: [
-                      Baseline(
-                        baseline: 24,
-                        baselineType: TextBaseline.alphabetic,
-                        child: IconButton(
-                          onPressed: () => _toggleBookmark(animeList),
-                          icon: Icon(
-                            isBookmarked
-                                ? FontAwesomeIcons.solidBookmark
-                                : FontAwesomeIcons.bookmark,
-                            size: 18,
-                            color: isBookmarked
-                                ? AppColors.softGreen
-                                : Colors.black,
-                          ),
+                      // kalo pakai icon only
+                      GestureDetector(
+                        onTap: () {
+                          _toggleBookmark(animeList);
+                        },
+                        child: Icon(
+                          isBookmarked
+                              ? FontAwesomeIcons.solidBookmark
+                              : FontAwesomeIcons.bookmark,
+                          size: 18,
+                          color: isBookmarked
+                              ? AppColors.softGreen
+                              : Colors.black,
                         ),
                       ),
-
-                      const SizedBox(width: 20),
-                      Baseline(
-                        baseline: 24,
-                        baselineType: TextBaseline.alphabetic,
-                        child: Icon(FontAwesomeIcons.paperPlane, size: 18),
+                      Icon(
+                        FontAwesomeIcons.paperPlane,
+                        size: 18,
+                        color: Colors.black,
                       ),
+
+                      // kalau pakai iconbutton
+                      // IconButton(
+                      //   padding: EdgeInsets.zero,
+                      //   onPressed: () => _toggleBookmark(animeList),
+                      //   icon: Icon(
+                      //     isBookmarked
+                      //         ? FontAwesomeIcons.solidBookmark
+                      //         : FontAwesomeIcons.bookmark,
+                      //     size: 18,
+                      //     color: isBookmarked
+                      //         ? AppColors.softGreen
+                      //         : Colors.black,
+                      //   ),
+                      // ),
+                      // IconButton(
+                      //   padding: EdgeInsets.zero,
+                      //   onPressed: () => _toggleBookmark(animeList),
+                      //   icon: Icon(
+                      //     FontAwesomeIcons.paperPlane,
+                      //     size: 18,
+                      //     color: Colors.black,
+                      //   ),
+                      // ),
+
+                      // pakai baseline
+                      // Baseline(
+                      //   baseline: 24,
+                      //   baselineType: TextBaseline.alphabetic,
+                      //   child: IconButton(
+                      //     padding: EdgeInsets.zero,
+                      //     onPressed: () => _toggleBookmark(animeList),
+                      //     icon: Icon(
+                      //       isBookmarked
+                      //           ? FontAwesomeIcons.solidBookmark
+                      //           : FontAwesomeIcons.bookmark,
+                      //       size: 18,
+                      //       color: isBookmarked
+                      //           ? AppColors.softGreen
+                      //           : Colors.black,
+                      //     ),
+                      //   ),
+                      // ),
+
+                      // Baseline(
+                      //   baseline: 24,
+                      //   baselineType: TextBaseline.alphabetic,
+                      //   child: IconButton(
+                      //     padding: EdgeInsets.zero,
+                      //     onPressed: () => _toggleBookmark(animeList),
+                      //     icon: Icon(
+                      //       FontAwesomeIcons.paperPlane,
+                      //       size: 18,
+                      //       color: Colors.black,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
