@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -33,6 +34,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   void initState() {
     super.initState();
 
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted);
   }
@@ -41,13 +49,14 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     _webViewController.loadRequest(Uri.parse(url));
   }
 
-  // void _launchURL(String url) async {
-  //   if (await canLaunch(url)) {
-  //     await launch(url);
-  //   } else {
-  //     throw 'Could not launch $url';
-  //   }
-  // }
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +86,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             body: BlocBuilder<WatchBloc, WatchState>(
               builder: (context, state) {
                 if (state is WatchLoading) {
-                  // return const Center(child: CircularProgressIndicator());
                   return LoadingIndicator();
                 }
 
@@ -113,12 +121,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       ),
 
                       if (isServerLoading) LoadingIndicator(),
-                      // const Positioned.fill(
-                      //   child: ColoredBox(
-                      //     color: Colors.white,
-                      //     child: Center(child: CircularProgressIndicator()),
-                      //   ),
-                      // ),
                     ],
                   );
                 }
@@ -140,7 +142,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 
-  // Widget _episodeInfo(String title, String releaseTime) {
   Widget _episodeInfo(DetailAnimeNontonData animeData) {
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -193,12 +194,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                           : Colors.grey,
                     ),
                   ),
-                  // style: OutlinedButton.styleFrom(
-                  //   backgroundColor: animeData.hasPrevEpisode
-                  //       ? Colors.green
-                  //       : Colors.grey,
-                  //   foregroundColor: Colors.white,
-                  // ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -356,12 +351,15 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "${quality.title} | ${quality.size}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontFamily: "Urbanist",
-                  fontWeight: FontWeight.bold,
+              Align(
+                alignment: AlignmentGeometry.centerLeft,
+                child: Text(
+                  "${quality.title} | ${quality.size}",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Urbanist",
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
@@ -473,15 +471,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
               const SizedBox(height: 8),
 
-              // const Text(
-              //   "You will be redirected to a browser to download this video.",
-              //   // textAlign: TextAlign.center,
-              //   style: TextStyle(
-              //     fontSize: 16,
-              //     fontFamily: "Urbanist",
-              //     // fontWeight: FontWeight.bold,
-              //   ),
-              // ),
               RichText(
                 text: TextSpan(
                   children: [

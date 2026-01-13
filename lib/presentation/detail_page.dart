@@ -50,8 +50,6 @@ class _DetailPageState extends State<DetailPage> {
     if (isBookmarked) {
       await db.removeSavedAnime(widget.animeId);
     } else {
-      print("toggle eps: ${anime.episodes}");
-
       await db.saveAnime(
         SavedAnimeModel(
           animeId: widget.animeId,
@@ -79,7 +77,7 @@ class _DetailPageState extends State<DetailPage> {
             ..add(FetchDetailAnimeData(widget.animeId)),
       child: Scaffold(
         // appBar: PreferredSize(
-        //   preferredSize: const Size.fromHeight(0.0), // Set the height to zero
+        //   preferredSize: const Size.fromHeight(0.0),
         //   child: AppBar(
         //     backgroundColor: Colors.green.shade50,
         //     // You can still use AppBar properties here if needed,
@@ -91,7 +89,6 @@ class _DetailPageState extends State<DetailPage> {
         body: BlocBuilder<DetailBloc, DetailState>(
           builder: (context, state) {
             if (state is DetailLoading) {
-              // return const Center(child: CircularProgressIndicator());
               return LoadingIndicator();
             } else if (state is DetailLoaded) {
               final detailList = state.detailAnimeModel.data;
@@ -99,13 +96,10 @@ class _DetailPageState extends State<DetailPage> {
               final recomendedList =
                   state.detailAnimeModel.data.recommendedAnimeList;
               final episodeList = state.detailAnimeModel.data.episodeList;
-              // final season = if (state.detailAnimeModel.data.title)
 
               final title = state.detailAnimeModel.data.title;
               final seasonInfo = getAnimeSeason(title);
-              final episode = state.detailAnimeModel.data.episodes;
 
-              print("state epsList: ${episodeList.toString()}");
               return Padding(
                 padding: EdgeInsetsGeometry.zero,
                 child: ListView(
@@ -129,26 +123,6 @@ class _DetailPageState extends State<DetailPage> {
           },
         ),
       ),
-
-      // body: SafeArea(
-      //   child: ListView(
-      //     padding: EdgeInsets.zero,
-      //     children: [
-      //       ShowcaseHeaderDetail(),
-      //       ShowcaseInformationDetail(),
-      //       ShowcaseInformationEpisodes(),
-      //       PreferencesPage(),
-      //     ],
-      //   ),
-      // ),
-
-      // body: ListView(
-      //   children: [
-      //     ShowcaseHeaderDetail(),
-      //     ShowcaseInformationDetail(),
-      //     ShowcaseInformationEpisodes(),
-      //   ],
-      // ),
     );
   }
 
@@ -161,7 +135,6 @@ class _DetailPageState extends State<DetailPage> {
         image: DecorationImage(image: NetworkImage(poster), fit: BoxFit.cover),
       ),
       child: ClipRRect(
-        // make sure we apply clip it properly
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
@@ -185,7 +158,6 @@ class _DetailPageState extends State<DetailPage> {
                 Positioned(
                   top: 5,
                   left: 15,
-                  // child: Icon(Icons.arrow_back, color: Colors.white),
                   child: IconButton(
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -377,75 +349,6 @@ class _DetailPageState extends State<DetailPage> {
                     fontFamily: "Urbanist",
                   ),
                 ),
-                // Container(
-                //   decoration: BoxDecoration(
-                //     border: Border.all(color: AppColors.softGreen, width: 1.0),
-                //     borderRadius: BorderRadius.circular(4),
-                //   ),
-                //   child: Padding(
-                //     padding: EdgeInsetsGeometry.symmetric(
-                //       horizontal: 6,
-                //       vertical: 2,
-                //     ),
-                //     child: Text(
-                //       "13+",
-                //       textAlign: TextAlign.center,
-                //       style: TextStyle(
-                //         color: AppColors.softGreen,
-                //         fontSize: 12,
-                //         fontFamily: "Urbanist",
-                //         fontWeight: FontWeight.bold,
-                //         // color: Colors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // Container(
-                //   decoration: BoxDecoration(
-                //     border: Border.all(color: AppColors.softGreen, width: 1.0),
-                //     borderRadius: BorderRadius.circular(4),
-                //   ),
-                //   child: Padding(
-                //     padding: EdgeInsetsGeometry.symmetric(
-                //       horizontal: 6,
-                //       vertical: 2,
-                //     ),
-                //     child: Text(
-                //       "Japan",
-                //       textAlign: TextAlign.center,
-                //       style: TextStyle(
-                //         color: AppColors.softGreen,
-                //         fontSize: 12,
-                //         fontFamily: "Urbanist",
-                //         fontWeight: FontWeight.bold,
-                //         // color: Colors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                // Container(
-                //   decoration: BoxDecoration(
-                //     border: Border.all(color: AppColors.softGreen, width: 1.0),
-                //     borderRadius: BorderRadius.circular(4),
-                //   ),
-                //   child: Padding(
-                //     padding: EdgeInsetsGeometry.symmetric(
-                //       horizontal: 6,
-                //       vertical: 2,
-                //     ),
-                //     child: Text(
-                //       "Subtitle",
-                //       textAlign: TextAlign.center,
-                //       style: TextStyle(
-                //         color: AppColors.softGreen,
-                //         fontSize: 12,
-                //         fontFamily: "Urbanist",
-                //         fontWeight: FontWeight.bold,
-                //         // color: Colors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
             Row(
@@ -501,7 +404,6 @@ class _DetailPageState extends State<DetailPage> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   genres,
-                  // "Genre: Action, Martial Arts, Adventure, Dark Fantasy, Thriller, Demon",
                   style: TextStyle(
                     fontFamily: "Urbanist",
                     fontSize: 14,
@@ -514,7 +416,6 @@ class _DetailPageState extends State<DetailPage> {
             ),
             ExpandableText(
               animeList.synopsis.paragraphs.join(' '),
-              // "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
               expandText: "View more",
               maxLines: 3,
               linkColor: AppColors.softGreen,
@@ -575,25 +476,6 @@ class _DetailPageState extends State<DetailPage> {
       ],
     );
   }
-
-  // Widget ShowcaseInformationEpisodes() {
-  //   return Container(
-  //     child: Column(
-  //       children: [
-  //         Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             Text("Episodes"),
-  //             Row(
-  //               children: [Text("Season 2"), Icon(Icons.keyboard_arrow_down)],
-  //             ),
-  //             ShowcaseEpisodeList(context),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   // showcase episode list
   Widget ShowcaseEpisodeList(
