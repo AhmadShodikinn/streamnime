@@ -118,7 +118,27 @@ class _DetailPageState extends State<DetailPage> {
                 ),
               );
             } else if (state is DetailError) {
-              return Center(child: Text(state.message));
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Oops!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Urbanist",
+                        color: AppColors.softRed,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "It looks like you don't have a connection.",
+                      style: TextStyle(fontSize: 18, fontFamily: "Urbanist"),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
             }
 
             return const SizedBox.shrink();
@@ -181,26 +201,6 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ),
       ),
-      // child: Stack(
-      //   children: [
-      //     Positioned(
-      //       top: 20,
-      //       left: 15,
-      //       // child: Icon(Icons.arrow_back, color: Colors.white),
-      //       child: IconButton(
-      //         onPressed: () {
-      //           Navigator.of(context).pop();
-      //         },
-      //         icon: Icon(Icons.arrow_back, color: Colors.white),
-      //       ),
-      //     ),
-      //     Positioned(
-      //       top: 20,
-      //       right: 15,
-      //       child: Icon(Icons.cast_sharp, color: Colors.white),
-      //     ),
-      //   ],
-      // ),
     );
   }
 
@@ -463,11 +463,6 @@ class _DetailPageState extends State<DetailPage> {
                       color: AppColors.softGreen,
                     ),
                   ),
-                  // Icon(
-                  //   Icons.keyboard_arrow_down,
-                  //   size: 20,
-                  //   color: AppColors.softGreen,
-                  // ),
                 ],
               ),
             ],
@@ -521,7 +516,6 @@ class _DetailPageState extends State<DetailPage> {
   ) {
     return GestureDetector(
       onTap: () {
-        // print(episodeid);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -535,10 +529,6 @@ class _DetailPageState extends State<DetailPage> {
         width: 150,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          // image: DecorationImage(
-          //   image: AssetImage('assets/images/background-header.jpg'), // atau .png
-          //   fit: BoxFit.cover,
-          // ),
           image: DecorationImage(
             image: NetworkImage(poster),
             fit: BoxFit.cover,

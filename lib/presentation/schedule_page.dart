@@ -45,13 +45,10 @@ class _ReleasePageState extends State<ReleasePage> {
           title: AppBar(
             backgroundColor: Colors.white,
             elevation: 0,
-            titleSpacing: 0, // biar rapi ke kiri
+            titleSpacing: 0,
             title: Row(
               children: [
-                Image.asset(
-                  'assets/images/Animplex.png',
-                  height: 24, // icon size
-                ),
+                Image.asset('assets/images/Animplex.png', height: 24),
                 const SizedBox(width: 8),
                 const Text(
                   "Release Schedule",
@@ -120,7 +117,7 @@ class _ReleasePageState extends State<ReleasePage> {
                                 });
                               },
                               child: CardByDay(
-                                nameOfTheDay: key, // bahasa inggris
+                                nameOfTheDay: key,
                                 activeDay: selectedDayKey == key,
                               ),
                             ),
@@ -143,7 +140,27 @@ class _ReleasePageState extends State<ReleasePage> {
                 ],
               );
             } else if (state is ScheduleError) {
-              return Center(child: Text(state.message));
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Oops!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Urbanist",
+                        color: AppColors.softRed,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "It looks like you don't have a connection.",
+                      style: TextStyle(fontSize: 18, fontFamily: "Urbanist"),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
             }
 
             return const SizedBox.shrink();

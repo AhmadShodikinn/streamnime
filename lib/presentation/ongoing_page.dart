@@ -57,7 +57,6 @@ class _OngoingPageState extends State<OngoingPage> {
       body: BlocBuilder<OngoingBloc, OngoingState>(
         builder: (context, state) {
           if (state is OngoingLoading) {
-            // return const Center(child: CircularProgressIndicator());
             return LoadingIndicator();
           } else if (state is OngoingLoaded) {
             final ongoingList = state.ongoingData.data.animeList;
@@ -78,7 +77,27 @@ class _OngoingPageState extends State<OngoingPage> {
               },
             );
           } else if (state is OngoingError) {
-            return Center(child: Text(state.message));
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Oops!",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: "Urbanist",
+                      color: AppColors.softRed,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "It looks like you don't have a connection.",
+                    style: TextStyle(fontSize: 18, fontFamily: "Urbanist"),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
           }
 
           return const SizedBox.shrink();

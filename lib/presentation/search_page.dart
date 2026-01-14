@@ -59,7 +59,6 @@ class _SearchPageState extends State<SearchPage> {
                 child: BlocBuilder<SearchBloc, SearchState>(
                   builder: (context, state) {
                     if (state is SearchLoading) {
-                      // return const Center(child: CircularProgressIndicator());
                       return LoadingIndicator();
                     } else if (state is SearchLoaded) {
                       final searchAnimeData = state.searchData.data.animeList;
@@ -92,7 +91,30 @@ class _SearchPageState extends State<SearchPage> {
                         ],
                       );
                     } else if (state is SearchError) {
-                      return Center(child: Text(state.message));
+                      return const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Oops!",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: "Urbanist",
+                                color: AppColors.softRed,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "It looks like you don't have a connection.",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: "Urbanist",
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
                     }
 
                     return const SizedBox.shrink();
@@ -188,7 +210,6 @@ class CardSearch extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // IMAGE LEFT
           GestureDetector(
             onTap: () {
               Navigator.push(
@@ -221,7 +242,6 @@ class CardSearch extends StatelessWidget {
               spacing: 8,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TITLE
                 Text(
                   searchAnimeItem.title,
                   maxLines: 2,
@@ -242,8 +262,6 @@ class CardSearch extends StatelessWidget {
                           : searchAnimeItem.score,
                       style: const TextStyle(fontSize: 14),
                     ),
-
-                    // TAG STATUS
                   ],
                 ),
 

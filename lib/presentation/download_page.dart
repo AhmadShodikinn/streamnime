@@ -13,13 +13,10 @@ class DownloadPage extends StatelessWidget {
         title: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          titleSpacing: 0, // biar rapi ke kiri
+          titleSpacing: 0,
           title: Row(
             children: [
-              Image.asset(
-                'assets/images/Animplex.png',
-                height: 24, // icon size
-              ),
+              Image.asset('assets/images/Animplex.png', height: 24),
               const SizedBox(width: 8),
               const Text(
                 "Download",

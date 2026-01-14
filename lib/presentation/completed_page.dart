@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:streaming_app/bloc/complete/complete_bloc.dart';
 import 'package:streaming_app/bloc/complete/complete_event.dart';
 import 'package:streaming_app/bloc/complete/complete_state.dart';
+import 'package:streaming_app/presentation/constant/app_colors.dart';
 import 'package:streaming_app/presentation/widget/loading_indicator.dart';
 import 'package:streaming_app/presentation/widget/showcase_item_grid.dart';
 
@@ -66,17 +67,33 @@ class _CompletedPageState extends State<CompletedPage> {
               child: ShowcaseItemGrid(completeList, _scrollController),
             );
           } else if (state is CompleteError) {
-            return Center(child: Text(state.message));
+            // return Center(child: Text(state.message));
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Oops!",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: "Urbanist",
+                      color: AppColors.softRed,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "It looks like you don't have a connection.",
+                    style: TextStyle(fontSize: 18, fontFamily: "Urbanist"),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
           }
 
           return const SizedBox.shrink();
         },
       ),
-
-      // body: Padding(
-      //   padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
-      //   child: ShowcaseItemGrid(),
-      // ),
     );
   }
 }

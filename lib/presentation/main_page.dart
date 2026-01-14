@@ -48,7 +48,6 @@ class _MainPageState extends State<MainPage> {
         body: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             if (state is HomeLoading) {
-              // return Center(child: CircularProgressIndicator());
               return LoadingIndicator();
             } else if (state is HomeLoaded) {
               final ongoingList = state.homeData.data.ongoing.animeList;
@@ -60,7 +59,7 @@ class _MainPageState extends State<MainPage> {
                   ContentSection("Ongoing Anime", () {
                     Navigator.push(
                       context,
-                      // MaterialPageRoute(builder: (context) => OngoingPage()),
+                      // MaterialPageRoute(builder: (context) => OngoingPage()), // tanpa blocProvider
                       MaterialPageRoute(
                         builder: (_) => BlocProvider(
                           create: (_) =>
@@ -71,16 +70,13 @@ class _MainPageState extends State<MainPage> {
                       ),
                     );
                   }),
-                  ongoingShowcaseList(
-                    context,
-                    ongoingList,
-                  ), // Tampilkan list ongoing
+                  ongoingShowcaseList(context, ongoingList),
 
                   ContentSection("Completed Anime", () {
                     Navigator.push(
                       context,
                       // MaterialPageRoute(
-                      //   builder: (context) => CompletedPage(),
+                      //   builder: (context) => CompletedPage(),  tanpa blocProvider
                       // ),
                       MaterialPageRoute(
                         builder: (_) => BlocProvider(
@@ -98,7 +94,27 @@ class _MainPageState extends State<MainPage> {
                 ],
               );
             } else if (state is HomeError) {
-              return Center(child: Text(state.message));
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Oops!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: "Urbanist",
+                        color: AppColors.softRed,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      "It looks like you don't have a connection.",
+                      style: TextStyle(fontSize: 18, fontFamily: "Urbanist"),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
             }
 
             return const SizedBox.shrink();
@@ -372,7 +388,7 @@ class _MainPageState extends State<MainPage> {
                   animeId: anime.animeId,
                   poster: anime.poster,
                   lastEpisode: anime.episodes,
-                  rating: null, // ongoing tidak punya score
+                  rating: null,
                 ),
               ),
             );
@@ -419,36 +435,4 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-
-  // Widget showcaseCardList(BuildContext context, List<HomeAnimeItem> animelist) {
-  //   return SizedBox(
-  //     height: 230,
-  //     child: Padding(
-  //       padding: const EdgeInsets.only(left: 15),
-  //       child: ListView.builder(
-  //         scrollDirection: Axis.horizontal,
-  //         itemCount: animelist.length,
-  //         itemBuilder: (context, index) {
-  //           final anime = animelist[index];
-
-  //           return Padding(
-  //             padding: const EdgeInsets.only(right: 8),
-  //             child: showcaseCardItem(
-  //               context: context,
-  //               poster: anime.poster,
-  //               lastEpisode: anime.episodes,
-  //               rating: anime.score,
-  //               onTap: () {
-  //                 Navigator.push(
-  //                   context,
-  //                   MaterialPageRoute(builder: (_) => DetailPage()),
-  //                 );
-  //               },
-  //             ),
-  //           );
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
 }
