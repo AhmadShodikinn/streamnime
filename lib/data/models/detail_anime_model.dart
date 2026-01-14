@@ -136,7 +136,7 @@ class GenreItem {
 
 class EpisodeItem {
   final String title;
-  final int? eps;
+  final int eps;
   final String date;
   final String episodeId;
   final String href;
@@ -154,7 +154,7 @@ class EpisodeItem {
   factory EpisodeItem.fromJson(Map<String, dynamic> json) {
     return EpisodeItem(
       title: json['title'] ?? '',
-      eps: json['eps'],
+      eps: json['eps'] ?? 0,
       date: json['date'] ?? '',
       episodeId: json['episodeId'] ?? '',
       href: json['href'] ?? '',

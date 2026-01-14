@@ -97,6 +97,8 @@ class _DetailPageState extends State<DetailPage> {
                   state.detailAnimeModel.data.recommendedAnimeList;
               final episodeList = state.detailAnimeModel.data.episodeList;
 
+              print(episodeList.first.toString());
+
               final title = state.detailAnimeModel.data.title;
               final seasonInfo = getAnimeSeason(title);
 
@@ -500,7 +502,7 @@ class _DetailPageState extends State<DetailPage> {
               child: CardEpisodeShowcase(
                 poster,
                 anime.title,
-                anime.eps!,
+                anime.eps,
                 anime.episodeId,
               ),
             );

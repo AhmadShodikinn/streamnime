@@ -10,6 +10,8 @@ class DetailAnimeRepository {
     try {
       final response = await http.get(url);
 
+      print(response.body.toString());
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> json = jsonDecode(response.body);
         return DetailAnimeModel.fromJson(json);

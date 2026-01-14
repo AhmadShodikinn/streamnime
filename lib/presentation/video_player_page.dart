@@ -51,10 +51,13 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     super.dispose();
   }
 
@@ -64,8 +67,14 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       create: (_) =>
           WatchBloc(DetailAnimeNontonRepository())
             ..add(FetchDetailAnimeNonton(widget.epsId)),
-      child: Builder(
-        builder: (context) {
+      child: OrientationBuilder(
+        builder: (context, orientation) {
+          if (orientation == Orientation.landscape) {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+          } else {
+            SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+          }
+
           return Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
@@ -322,7 +331,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       ),
                     )
                   : const Text(
-                      "Tidak tersedia",
+                      "No available",
                       style: TextStyle(
                         color: Colors.grey,
                         fontStyle: FontStyle.italic,
@@ -414,7 +423,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       ),
                     )
                   : const Text(
-                      "Tidak tersedia",
+                      "No available",
                       style: TextStyle(
                         color: Colors.grey,
                         fontStyle: FontStyle.italic,
